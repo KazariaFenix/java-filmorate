@@ -9,6 +9,7 @@ import java.time.LocalDate;
 @Component
 public class PastValidator implements ConstraintValidator<IsAfter, LocalDate> {
     String validDate;
+
     @Override
     public void initialize(IsAfter constraintAnnotation) {
         validDate = constraintAnnotation.current();

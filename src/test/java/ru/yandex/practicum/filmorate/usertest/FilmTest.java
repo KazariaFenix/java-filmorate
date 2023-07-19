@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class FilmTest {
-    @Value(value="${local.server.port}")
+    @Value(value = "${local.server.port}")
     private int port;
     @Autowired
     private TestRestTemplate restTemplate;

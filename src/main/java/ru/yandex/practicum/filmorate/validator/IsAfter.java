@@ -13,9 +13,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Constraint(validatedBy = PastValidator.class)
 @Documented
-public @interface IsAfter{
+public @interface IsAfter {
     String message() default "{message.key}";
+
     String current();
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }
