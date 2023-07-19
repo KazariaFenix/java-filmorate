@@ -14,6 +14,7 @@ import java.util.*;
 public class UserController {
     @Getter
     UserManager manager = new UserManager();
+
     @GetMapping
     public List<User> getUserList() {
         return new ArrayList<>(manager.getUserMap().values());

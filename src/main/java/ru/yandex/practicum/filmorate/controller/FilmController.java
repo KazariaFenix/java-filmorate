@@ -14,6 +14,7 @@ import java.util.*;
 @RequestMapping("/films")
 public class FilmController {
     FilmManager manager = new FilmManager();
+
     @GetMapping
     public List<Film> getFilmList() {
         return new ArrayList<>(manager.getFilmMap().values());
