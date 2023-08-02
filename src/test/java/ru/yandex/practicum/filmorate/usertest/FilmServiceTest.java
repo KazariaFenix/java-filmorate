@@ -31,8 +31,8 @@ public class FilmServiceTest {
     @Test
     public void getFilmById() {
         Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100).
-                rate(0).userLike(new ArrayList<>()).build();
+                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
+                .rate(0).userLike(new ArrayList<>()).build();
         Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
                 .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
                 .rate(0).userLike(new ArrayList<>()).build();
@@ -50,8 +50,8 @@ public class FilmServiceTest {
     @Test
     public void getFilmUnknown() {
         Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100).
-                rate(0).userLike(new ArrayList<>()).build();
+                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
+                .rate(0).userLike(new ArrayList<>()).build();
         Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
                 .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
                 .rate(0).userLike(new ArrayList<>()).build();
@@ -67,8 +67,8 @@ public class FilmServiceTest {
     @Test
     public void getPopularFilmList() {
         Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100).
-                rate(0).userLike(new ArrayList<>()).build();
+                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
+                .rate(0).userLike(new ArrayList<>()).build();
         Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
                 .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
                 .rate(4).userLike(new ArrayList<>()).build();
@@ -85,8 +85,8 @@ public class FilmServiceTest {
     @Test
     public void getPopularFilm() {
         Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100).
-                rate(0).userLike(new ArrayList<>()).build();
+                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
+                .rate(0).userLike(new ArrayList<>()).build();
         Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
                 .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
                 .rate(4).userLike(new ArrayList<>()).build();
@@ -103,8 +103,8 @@ public class FilmServiceTest {
     @Test
     public void addLikeNormal() {
         Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100).
-                rate(0).userLike(new ArrayList<>()).build();
+                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
+                .rate(0).userLike(new ArrayList<>()).build();
         Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
                 .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
                 .rate(4).userLike(new ArrayList<>()).build();
@@ -127,8 +127,8 @@ public class FilmServiceTest {
     @Test
     public void addLikeRepeat() {
         Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100).
-                rate(0).userLike(new ArrayList<>()).build();
+                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
+                .rate(0).userLike(new ArrayList<>()).build();
         Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
                 .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
                 .rate(4).userLike(new ArrayList<>()).build();
@@ -154,8 +154,8 @@ public class FilmServiceTest {
     @Test
     public void addLikeUnknown() {
         Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100).
-                rate(0).userLike(new ArrayList<>()).build();
+                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
+                .rate(0).userLike(new ArrayList<>()).build();
         Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
                 .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
                 .rate(4).userLike(new ArrayList<>()).build();
@@ -177,8 +177,8 @@ public class FilmServiceTest {
     @Test
     public void deleteLikeNormal() {
         Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100).
-                rate(0).userLike(new ArrayList<>()).build();
+                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
+                .rate(0).userLike(new ArrayList<>()).build();
         Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
                 .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
                 .rate(4).userLike(new ArrayList<>()).build();
@@ -203,8 +203,8 @@ public class FilmServiceTest {
     @Test
     public void deleteLikeRepeat() {
         Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100).
-                rate(0).userLike(new ArrayList<>()).build();
+                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
+                .rate(0).userLike(new ArrayList<>()).build();
         Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
                 .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
                 .rate(4).userLike(new ArrayList<>()).build();
@@ -232,8 +232,8 @@ public class FilmServiceTest {
     @Test
     public void deleteLikeUnknown() {
         Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100).
-                rate(0).userLike(new ArrayList<>()).build();
+                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
+                .rate(0).userLike(new ArrayList<>()).build();
         Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
                 .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
                 .rate(4).userLike(new ArrayList<>()).build();
