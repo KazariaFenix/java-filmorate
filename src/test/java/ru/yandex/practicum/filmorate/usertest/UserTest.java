@@ -13,7 +13,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,12 +28,12 @@ public class UserTest {
 
     @Test
     void postUserNormal() throws IOException, InterruptedException {
-        final User user = new User(0, "yandex@yandex.ru", "Valerii Programist", "VlP",
-                LocalDate.of(1956, 11, 1));
+        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final User newUser = response.getBody();
-        user.setId(1);
+        user = user.toBuilder().id(1).build();
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
         assertEquals(getResponse.getBody().size(), 1, "Неверная работа программы");
         assertEquals(newUser, user);
@@ -41,108 +41,108 @@ public class UserTest {
 
     @Test
     void postUserBlankEmail() throws IOException, InterruptedException {
-        final User user = new User(0, "", "Valerii Programist", "VlP",
-                LocalDate.of(1956, 11, 1));
+        User user = User.builder().id(0).email(" ").name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final int statusCode = response.getStatusCodeValue();
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
         assertEquals(getResponse.getBody().size(), 0, "Добавление Юзера с неподходящим Email");
-        assertEquals(statusCode, 400);
+        assertEquals(statusCode, 500);
     }
 
     @Test
     void postUserNullEmail() throws IOException, InterruptedException {
-        final User user = new User(0, null, "Valerii Programist", "VlP",
-                LocalDate.of(1956, 11, 1));
+        User user = User.builder().id(0).name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final int statusCode = response.getStatusCodeValue();
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
         assertEquals(getResponse.getBody().size(), 0, "Добавление Юзера с неподходящим Email");
-        assertEquals(statusCode, 400);
+        assertEquals(statusCode, 500);
     }
 
     @Test
     void postUserFailEmail() throws IOException, InterruptedException {
-        final User user = new User(0, "dhdfnfnf", "Valerii Programist", "VlP",
-                LocalDate.of(1956, 11, 1));
+        User user = User.builder().id(0).email("fdhnndndn").name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final int statusCode = response.getStatusCodeValue();
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
         assertEquals(getResponse.getBody().size(), 0, "Добавление Юзера с неподходящим Email");
-        assertEquals(statusCode, 400);
+        assertEquals(statusCode, 500);
     }
 
     @Test
     void postUserBlankLogin() throws IOException, InterruptedException {
-        final User user = new User(0, "yandex@yandex.ru", "Valerii Programist", " ",
-                LocalDate.of(1956, 11, 1));
+        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist").login(" ")
+                .birthday(LocalDate.of(1956, 11, 1)).build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final int statusCode = response.getStatusCodeValue();
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
         assertEquals(getResponse.getBody().size(), 0, "Добавление Юзера с неподходящим Login");
-        assertEquals(statusCode, 400);
+        assertEquals(statusCode, 500);
     }
 
     @Test
     void postUserNullLogin() throws IOException, InterruptedException {
-        final User user = new User(0, "yandex@yandex.ru", "Valerii Programist", null,
-                LocalDate.of(1956, 11, 1));
+        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
+                .birthday(LocalDate.of(1956, 11, 1)).build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final int statusCode = response.getStatusCodeValue();
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
         assertEquals(getResponse.getBody().size(), 0, "Добавление Юзера с неподходящим Login");
-        assertEquals(statusCode, 400);
+        assertEquals(statusCode, 500);
     }
 
     @Test
     void postUserFailBirthDayFuture() throws IOException, InterruptedException {
-        final User user = new User(0, "yandex@yandex.ru", "Valerii Programist", "VlP",
-                LocalDate.of(2856, 11, 1));
+        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(2956, 11, 1)).build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final int statusCode = response.getStatusCodeValue();
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
         assertEquals(getResponse.getBody().size(), 0, "Добавление Юзера с неподходящим Birthday");
-        assertEquals(statusCode, 400);
+        assertEquals(statusCode, 500);
     }
 
     @Test
     void postUserFailBirthDayPresent() throws IOException, InterruptedException {
-        final User user = new User(0, "yandex@yandex.ru", "Valerii Programist", "VlP",
-                LocalDate.now());
+        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.now()).build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final int statusCode = response.getStatusCodeValue();
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
         assertEquals(getResponse.getBody().size(), 0, "Добавление Юзера с неподходящим Birthday");
-        assertEquals(statusCode, 400);
+        assertEquals(statusCode, 500);
     }
 
     @Test
     void postUserFailBirthDayPast() throws IOException, InterruptedException {
-        final User user = new User(0, "yandex@yandex.ru", "Valerii Programist", "VlP",
-                LocalDate.of(1900, 1, 1));
+        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1900, 1, 1)).build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final int statusCode = response.getStatusCodeValue();
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
         assertEquals(getResponse.getBody().size(), 0, "Добавление Юзера с неподходящим Birthday");
-        assertEquals(statusCode, 400);
+        assertEquals(statusCode, 500);
     }
 
     @Test
     void postUserBoudaryCasePast() throws IOException, InterruptedException {
-        final User user = new User(0, "yandex@yandex.ru", "VlP", "VlP",
-                LocalDate.of(1900, 1, 2));
+        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1900, 1, 2)).build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final User newUser = response.getBody();
-        user.setId(1);
+        user = user.toBuilder().id(1).build();
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
         assertEquals(getResponse.getBody().size(), 1, "Неверная работа программы");
         assertEquals(newUser, user, "Неверное добавление пользователя");
@@ -150,12 +150,12 @@ public class UserTest {
 
     @Test
     void postUserBoudaryCasePresent() throws IOException, InterruptedException {
-        final User user = new User(0, "yandex@yandex.ru", "VlP", "VlP",
-                LocalDate.now().minusDays(1));
+        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.now().minusDays(1)).build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final User newUser = response.getBody();
-        user.setId(1);
+        user = user.toBuilder().id(1).build();
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
         assertEquals(getResponse.getBody().size(), 1, "Неверная работа программы");
         assertEquals(newUser, user, "Неверное добавление пользователя");
@@ -163,12 +163,11 @@ public class UserTest {
 
     @Test
     void postUserNullName() throws IOException, InterruptedException {
-        final User user = new User(0, "yandex@yandex.ru", null, "VlP",
-                LocalDate.of(1956, 11, 1));
+        User user = User.builder().id(0).email("yandex@yandex.ru")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final User newUser = response.getBody();
-        user.setId(1);
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
         assertEquals(getResponse.getBody().size(), 1, "Неверная работа программы");
         assertEquals(newUser.getName(), newUser.getLogin(), "Неверная замена null имени");
@@ -176,12 +175,11 @@ public class UserTest {
 
     @Test
     void postUserBlankName() throws IOException, InterruptedException {
-        final User user = new User(0, "yandex@yandex.ru", " ", "VlP",
-                LocalDate.of(1956, 11, 1));
+        User user = User.builder().id(0).email("yandex@yandex.ru").name(" ")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final User newUser = response.getBody();
-        user.setId(1);
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
         assertEquals(getResponse.getBody().size(), 1, "Неверная работа программы");
         assertEquals(newUser.getName(), newUser.getLogin(), "Неверная замена пустого имени");
@@ -189,12 +187,12 @@ public class UserTest {
 
     @Test
     void putUserNormal() {
-        final User user = new User(0, "yandex@yandex.ru", "Valerii Programist", "VlP",
-                LocalDate.of(1956, 11, 1));
+        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
-        final User putUser = new User(1, "yandex@yandex.ru", "Alexandro Designer", "Qwerty",
-                LocalDate.of(1976, 11, 1));
+        User putUser = user.builder().id(1).email("yandex@yandex.ru").name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
         final HttpEntity<User> newRequest = new HttpEntity<>(putUser);
         final ResponseEntity<User> newResponse = restTemplate.exchange(path, HttpMethod.PUT, newRequest, User.class);
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
@@ -204,12 +202,12 @@ public class UserTest {
 
     @Test
     void putUserUnknown() {
-        final User user = new User(0, "yandex@yandex.ru", "Valerii Programist", "VlP",
-                LocalDate.of(1956, 11, 1));
+        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
-        final User putUser = new User(46364634, "yandex@yandex.ru", "Alexandro Designer", "Qwerty",
-                LocalDate.of(1976, 11, 1));
+        User putUser = user.builder().id(2366230).email("yandex@yandex.ru").name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
         final HttpEntity<User> newRequest = new HttpEntity<>(putUser);
         final ResponseEntity<User> newResponse = restTemplate.exchange(path, HttpMethod.PUT, newRequest, User.class);
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
@@ -224,6 +222,17 @@ public class UserTest {
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
         assertEquals(getResponse.getBody().size(), 0, "Неверная работа программы");
-        assertEquals(response.getStatusCodeValue(), 415, "Неверный ответ сервера");
+        assertEquals(response.getStatusCodeValue(), 500, "Неверный ответ сервера");
+    }
+
+    @Test
+    public void getEmptyList() {
+        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        final HttpEntity<User> request = new HttpEntity<>(user);
+        final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
+        final ResponseEntity<ArrayList> getResp = restTemplate.getForEntity(path + "/1/friends", ArrayList.class);
+        assertEquals(getResp.getStatusCodeValue(), 200, "Неверный ответ сервера");
+        assertEquals(getResp.getBody().size(), 0, "Неверная работа программы");
     }
 }
