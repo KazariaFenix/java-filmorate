@@ -40,8 +40,12 @@ public class UserService {
         if (user.getFriends().contains(friendId)) {
             throw new IllegalArgumentException("Данный пользователь уже добавлен в друзья");
         }
-        storage.getUserMap().put(userId, user.toBuilder().friend(friendId).build());
-        storage.getUserMap().put(friendId, friend.toBuilder().friend(userId).build());
+        storage.getUserMap().put(userId, user.toBuilder()
+                .friend(friendId)
+                .build());
+        storage.getUserMap().put(friendId, friend.toBuilder()
+                .friend(userId)
+                .build());
     }
 
     public void deleteFriend(int userId, int friendId) {
@@ -63,8 +67,14 @@ public class UserService {
         final List<Integer> friendList = friend.getFriends().stream()
                 .filter(integer -> !integer.equals(userId))
                 .collect(Collectors.toList());
-        storage.getUserMap().put(userId, user.toBuilder().clearFriends().friends(userList).build());
-        storage.getUserMap().put(friendId, friend.toBuilder().clearFriends().friends(friendList).build());
+        storage.getUserMap().put(userId, user.toBuilder()
+                .clearFriends()
+                .friends(userList)
+                .build());
+        storage.getUserMap().put(friendId, friend.toBuilder()
+                .clearFriends()
+                .friends(friendList)
+                .build());
 
     }
 

@@ -42,7 +42,10 @@ public class FilmService {
         if (film.getUserLike().contains(userId)) {
             throw new IllegalArgumentException("Пользователь уже поставил фильму лайк");
         }
-        filmStorage.getFilmMap().put(filmId, film.toBuilder().rate(film.getRate() + 1).oneLike(userId).build());
+        filmStorage.getFilmMap().put(filmId, film.toBuilder()
+                .rate(film.getRate() + 1)
+                .oneLike(userId)
+                .build());
     }
 
     public void deleteLike(int filmId, int userId) {
@@ -58,10 +61,14 @@ public class FilmService {
             throw new IllegalArgumentException("Пользователь еще не поставил фильму лайк");
         }
 
-        List<Integer> filmLike = film.getUserLike().stream().filter(integer -> integer != userId)
+        List<Integer> filmLike = film.getUserLike()
+                .stream()
+                .filter(integer -> integer != userId)
                 .collect(Collectors.toList());
         filmStorage.getFilmMap().put(filmId, film.toBuilder().rate(film.getRate() - 1)
-                .clearUserLike().userLike(filmLike).build());
+                .clearUserLike()
+                .userLike(filmLike)
+                .build());
     }
 
     public List<Film> getPopularFilm(int count) {

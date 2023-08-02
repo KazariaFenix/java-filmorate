@@ -28,8 +28,13 @@ public class UserTest {
 
     @Test
     void postUserNormal() throws IOException, InterruptedException {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final User newUser = response.getBody();
@@ -41,8 +46,13 @@ public class UserTest {
 
     @Test
     void postUserBlankEmail() throws IOException, InterruptedException {
-        User user = User.builder().id(0).email(" ").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email(" ")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final int statusCode = response.getStatusCodeValue();
@@ -53,8 +63,12 @@ public class UserTest {
 
     @Test
     void postUserNullEmail() throws IOException, InterruptedException {
-        User user = User.builder().id(0).name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final int statusCode = response.getStatusCodeValue();
@@ -65,8 +79,13 @@ public class UserTest {
 
     @Test
     void postUserFailEmail() throws IOException, InterruptedException {
-        User user = User.builder().id(0).email("fdhnndndn").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("fdhnndndn")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final int statusCode = response.getStatusCodeValue();
@@ -77,8 +96,12 @@ public class UserTest {
 
     @Test
     void postUserBlankLogin() throws IOException, InterruptedException {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist").login(" ")
-                .birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0).email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login(" ")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final int statusCode = response.getStatusCodeValue();
@@ -89,8 +112,12 @@ public class UserTest {
 
     @Test
     void postUserNullLogin() throws IOException, InterruptedException {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final int statusCode = response.getStatusCodeValue();
@@ -101,8 +128,13 @@ public class UserTest {
 
     @Test
     void postUserFailBirthDayFuture() throws IOException, InterruptedException {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(2956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(2956, 11, 1))
+                .build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final int statusCode = response.getStatusCodeValue();
@@ -113,8 +145,13 @@ public class UserTest {
 
     @Test
     void postUserFailBirthDayPresent() throws IOException, InterruptedException {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.now()).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.now())
+                .build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final int statusCode = response.getStatusCodeValue();
@@ -125,8 +162,13 @@ public class UserTest {
 
     @Test
     void postUserFailBirthDayPast() throws IOException, InterruptedException {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1900, 1, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1900, 1, 1))
+                .build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final int statusCode = response.getStatusCodeValue();
@@ -137,8 +179,13 @@ public class UserTest {
 
     @Test
     void postUserBoudaryCasePast() throws IOException, InterruptedException {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1900, 1, 2)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1900, 1, 2))
+                .build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final User newUser = response.getBody();
@@ -150,8 +197,13 @@ public class UserTest {
 
     @Test
     void postUserBoudaryCasePresent() throws IOException, InterruptedException {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.now().minusDays(1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.now().minusDays(1))
+                .build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final User newUser = response.getBody();
@@ -163,8 +215,12 @@ public class UserTest {
 
     @Test
     void postUserNullName() throws IOException, InterruptedException {
-        User user = User.builder().id(0).email("yandex@yandex.ru")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final User newUser = response.getBody();
@@ -175,8 +231,13 @@ public class UserTest {
 
     @Test
     void postUserBlankName() throws IOException, InterruptedException {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name(" ")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name(" ")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final User newUser = response.getBody();
@@ -187,12 +248,22 @@ public class UserTest {
 
     @Test
     void putUserNormal() {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
-        User putUser = user.builder().id(1).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User putUser = user.builder()
+                .id(1)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final HttpEntity<User> newRequest = new HttpEntity<>(putUser);
         final ResponseEntity<User> newResponse = restTemplate.exchange(path, HttpMethod.PUT, newRequest, User.class);
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
@@ -202,12 +273,22 @@ public class UserTest {
 
     @Test
     void putUserUnknown() {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
-        User putUser = user.builder().id(2366230).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User putUser = user.builder()
+                .id(2366230)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final HttpEntity<User> newRequest = new HttpEntity<>(putUser);
         final ResponseEntity<User> newResponse = restTemplate.exchange(path, HttpMethod.PUT, newRequest, User.class);
         final ResponseEntity<ArrayList> getResponse = restTemplate.getForEntity(path, ArrayList.class);
@@ -227,8 +308,13 @@ public class UserTest {
 
     @Test
     public void getEmptyList() {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final HttpEntity<User> request = new HttpEntity<>(user);
         final ResponseEntity<User> response = restTemplate.postForEntity(path, request, User.class);
         final ResponseEntity<ArrayList> getResp = restTemplate.getForEntity(path + "/1/friends", ArrayList.class);

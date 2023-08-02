@@ -28,11 +28,21 @@ public class UserServiceTest {
 
     @Test
     public void getUserById() {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> response = restTemplate.postForEntity(path, new HttpEntity<>(user), User.class);
-        User friend = User.builder().id(0).email("yandexqwqfgw@yandex.ru").name("Anatolii Programist")
-                .login("AlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User friend = User.builder()
+                .id(0)
+                .email("yandexqwqfgw@yandex.ru")
+                .name("Anatolii Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseFriend = restTemplate.postForEntity(path, new HttpEntity<>(friend),
                 User.class);
         user = response.getBody();
@@ -43,11 +53,21 @@ public class UserServiceTest {
 
     @Test
     public void getUserUnknown() {
-        final User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> response = restTemplate.postForEntity(path, new HttpEntity<>(user), User.class);
-        final User friend = User.builder().id(0).email("yandexqwqfgw@yandex.ru").name("Anatolii Programist")
-                .login("AlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User friend = User.builder()
+                .id(0)
+                .email("yandexqwqfgw@yandex.ru")
+                .name("Anatolii Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseFriend = restTemplate.postForEntity(path, new HttpEntity<>(friend),
                 User.class);
         final ResponseEntity<User> responseGet = restTemplate.getForEntity(path + "/" + 235235325, User.class);
@@ -57,11 +77,21 @@ public class UserServiceTest {
 
     @Test
     public void addFriendNormal() {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> response = restTemplate.postForEntity(path, new HttpEntity<>(user), User.class);
-        User friend = User.builder().id(0).email("yandexqwqfgw@yandex.ru").name("Anatolii Programist")
-                .login("AlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User friend = User.builder()
+                .id(0)
+                .email("yandexqwqfgw@yandex.ru")
+                .name("Anatolii Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseFriend = restTemplate.postForEntity(path, new HttpEntity<>(friend),
                 User.class);
         user = response.getBody();
@@ -75,11 +105,21 @@ public class UserServiceTest {
 
     @Test
     public void addFriendUnknown() {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> response = restTemplate.postForEntity(path, new HttpEntity<>(user), User.class);
-        User friend = User.builder().id(0).email("yandexqwqfgw@yandex.ru").name("Anatolii Programist")
-                .login("AlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User friend = User.builder()
+                .id(0)
+                .email("yandexqwqfgw@yandex.ru")
+                .name("Anatolii Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseFriend = restTemplate.postForEntity(path, new HttpEntity<>(friend),
                 User.class);
         user = response.getBody();
@@ -93,11 +133,21 @@ public class UserServiceTest {
 
     @Test
     public void addFriendRepeat() {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> response = restTemplate.postForEntity(path, new HttpEntity<>(user), User.class);
-        User friend = User.builder().id(0).email("yandexqwqfgw@yandex.ru").name("Anatolii Programist")
-                .login("AlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User friend = User.builder()
+                .id(0)
+                .email("yandexqwqfgw@yandex.ru")
+                .name("Anatolii Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseFriend = restTemplate.postForEntity(path, new HttpEntity<>(friend),
                 User.class);
         user = response.getBody();
@@ -114,11 +164,21 @@ public class UserServiceTest {
 
     @Test
     public void getFriends() {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> response = restTemplate.postForEntity(path, new HttpEntity<>(user), User.class);
-        User friend = User.builder().id(0).email("yandexqwqfgw@yandex.ru").name("Anatolii Programist")
-                .login("AlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User friend = User.builder()
+                .id(0)
+                .email("yandexqwqfgw@yandex.ru")
+                .name("Anatolii Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseFriend = restTemplate.postForEntity(path, new HttpEntity<>(friend),
                 User.class);
         user = response.getBody();
@@ -135,11 +195,21 @@ public class UserServiceTest {
 
     @Test
     public void getCommonFriendsEmpty() {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> response = restTemplate.postForEntity(path, new HttpEntity<>(user), User.class);
-        User friend = User.builder().id(0).email("yandexqwqfgw@yandex.ru").name("Anatolii Programist")
-                .login("AlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User friend = User.builder()
+                .id(0)
+                .email("yandexqwqfgw@yandex.ru")
+                .name("Anatolii Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseFriend = restTemplate.postForEntity(path, new HttpEntity<>(friend),
                 User.class);
         user = response.getBody();
@@ -156,15 +226,30 @@ public class UserServiceTest {
 
     @Test
     public void getCommonFriend() {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> response = restTemplate.postForEntity(path, new HttpEntity<>(user), User.class);
-        User friend = User.builder().id(0).email("yandexqwqfgw@yandex.ru").name("Anatolii Programist")
-                .login("AlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User friend = User.builder()
+                .id(0)
+                .email("yandexqwqfgw@yandex.ru")
+                .name("Anatolii Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseFriend = restTemplate.postForEntity(path,
                 new HttpEntity<>(friend), User.class);
-        User other = User.builder().id(0).email("qwqfgw@yandex.ru").name("Natalia Programist")
-                .login("AlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User other = User.builder()
+                .id(0)
+                .email("qwqfgw@yandex.ru")
+                .name("Natalia Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseOther = restTemplate.postForEntity(path,
                 new HttpEntity<>(other), User.class);
         user = response.getBody();
@@ -188,15 +273,30 @@ public class UserServiceTest {
 
     @Test
     public void getSomeFriends() {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> response = restTemplate.postForEntity(path, new HttpEntity<>(user), User.class);
-        User friend = User.builder().id(0).email("yandexqwqfgw@yandex.ru").name("Anatolii Programist")
-                .login("AlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User friend = User.builder()
+                .id(0)
+                .email("yandexqwqfgw@yandex.ru")
+                .name("Anatolii Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseFriend = restTemplate.postForEntity(path,
                 new HttpEntity<>(friend), User.class);
-        User other = User.builder().id(0).email("qfgw@yandex.ru").name("Natalia Programist")
-                .login("AlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User other = User.builder()
+                .id(0)
+                .email("qwqfgw@yandex.ru")
+                .name("Natalia Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseOther = restTemplate.postForEntity(path,
                 new HttpEntity<>(other), User.class);
         user = response.getBody();
@@ -224,15 +324,30 @@ public class UserServiceTest {
 
     @Test
     public void deleteFriendNormal() {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> response = restTemplate.postForEntity(path, new HttpEntity<>(user), User.class);
-        User friend = User.builder().id(0).email("yandexqwqfgw@yandex.ru").name("Anatolii Programist")
-                .login("AlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User friend = User.builder()
+                .id(0)
+                .email("yandexqwqfgw@yandex.ru")
+                .name("Anatolii Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseFriend = restTemplate.postForEntity(path,
                 new HttpEntity<>(friend), User.class);
-        User other = User.builder().id(0).email("qwqfgw@yandex.ru").name("Natalia Programist")
-                .login("NlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User other = User.builder()
+                .id(0)
+                .email("qwqfgw@yandex.ru")
+                .name("Natalia Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseOther = restTemplate.postForEntity(path,
                 new HttpEntity<>(other), User.class);
         user = response.getBody();
@@ -262,15 +377,30 @@ public class UserServiceTest {
 
     @Test
     public void deleteFriendUnknown() {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> response = restTemplate.postForEntity(path, new HttpEntity<>(user), User.class);
-        User friend = User.builder().id(0).email("yandexqwqfgw@yandex.ru").name("Anatolii Programist")
-                .login("AlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User friend = User.builder()
+                .id(0)
+                .email("yandexqwqfgw@yandex.ru")
+                .name("Anatolii Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseFriend = restTemplate.postForEntity(path,
                 new HttpEntity<>(friend), User.class);
-        User other = User.builder().id(0).email("qwqfgw@yandex.ru").name("Natalia Programist")
-                .login("NlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User other = User.builder()
+                .id(0)
+                .email("qwqfgw@yandex.ru")
+                .name("Natalia Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseOther = restTemplate.postForEntity(path,
                 new HttpEntity<>(other), User.class);
         user = response.getBody();
@@ -294,15 +424,30 @@ public class UserServiceTest {
 
     @Test
     public void deleteFriendRepeat() {
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP")
+                .birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> response = restTemplate.postForEntity(path, new HttpEntity<>(user), User.class);
-        User friend = User.builder().id(0).email("yandexqwqfgw@yandex.ru").name("Anatolii Programist")
-                .login("AlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User friend = User.builder()
+                .id(0)
+                .email("yandexqwqfgw@yandex.ru")
+                .name("Anatolii Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseFriend = restTemplate.postForEntity(path,
                 new HttpEntity<>(friend), User.class);
-        User other = User.builder().id(0).email("qwqfgw@yandex.ru").name("Natalia Programist")
-                .login("NlP").birthday(LocalDate.of(1976, 11, 1)).build();
+        User other = User.builder()
+                .id(0)
+                .email("qwqfgw@yandex.ru")
+                .name("Natalia Programist")
+                .login("AlP")
+                .birthday(LocalDate.of(1976, 11, 1))
+                .build();
         final ResponseEntity<User> responseOther = restTemplate.postForEntity(path,
                 new HttpEntity<>(other), User.class);
         user = response.getBody();

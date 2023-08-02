@@ -30,12 +30,24 @@ public class FilmServiceTest {
 
     @Test
     public void getFilmById() {
-        Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
-                .rate(0).userLike(new ArrayList<>()).build();
-        Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
-                .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
-                .rate(0).userLike(new ArrayList<>()).build();
+        Film film = Film.builder()
+                .id(0)
+                .name("Naprolom")
+                .description("Vse kruto")
+                .releaseDate(LocalDate.of(2015, 11, 5))
+                .duration(100)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
+        Film other = Film.builder()
+                .id(436346320)
+                .name("VVlastelin Kolec")
+                .description("Vse ochen kruto")
+                .releaseDate(LocalDate.of(2000, 11, 5))
+                .duration(500)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
         final ResponseEntity<Film> responseFilm = restTemplate.postForEntity(path, new HttpEntity<>(film), Film.class);
         final ResponseEntity<Film> responseOther = restTemplate.postForEntity(path, new HttpEntity<>(other),
                 Film.class);
@@ -49,12 +61,24 @@ public class FilmServiceTest {
 
     @Test
     public void getFilmUnknown() {
-        Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
-                .rate(0).userLike(new ArrayList<>()).build();
-        Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
-                .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
-                .rate(0).userLike(new ArrayList<>()).build();
+        Film film = Film.builder()
+                .id(0)
+                .name("Naprolom")
+                .description("Vse kruto")
+                .releaseDate(LocalDate.of(2015, 11, 5))
+                .duration(100)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
+        Film other = Film.builder()
+                .id(436346320)
+                .name("VVlastelin Kolec")
+                .description("Vse ochen kruto")
+                .releaseDate(LocalDate.of(2000, 11, 5))
+                .duration(500)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
         final ResponseEntity<Film> responseFilm = restTemplate.postForEntity(path, new HttpEntity<>(film), Film.class);
         final ResponseEntity<Film> responseOther = restTemplate.postForEntity(path, new HttpEntity<>(other),
                 Film.class);
@@ -66,12 +90,24 @@ public class FilmServiceTest {
 
     @Test
     public void getPopularFilmList() {
-        Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
-                .rate(0).userLike(new ArrayList<>()).build();
-        Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
-                .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
-                .rate(4).userLike(new ArrayList<>()).build();
+        Film film = Film.builder()
+                .id(0)
+                .name("Naprolom")
+                .description("Vse kruto")
+                .releaseDate(LocalDate.of(2015, 11, 5))
+                .duration(100)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
+        Film other = Film.builder()
+                .id(436346320)
+                .name("VVlastelin Kolec")
+                .description("Vse ochen kruto")
+                .releaseDate(LocalDate.of(2000, 11, 5))
+                .duration(500)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
         final ResponseEntity<Film> responseFilm = restTemplate.postForEntity(path, new HttpEntity<>(film), Film.class);
         final ResponseEntity<Film> responseOther = restTemplate.postForEntity(path, new HttpEntity<>(other),
                 Film.class);
@@ -84,12 +120,24 @@ public class FilmServiceTest {
 
     @Test
     public void getPopularFilm() {
-        Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
-                .rate(0).userLike(new ArrayList<>()).build();
-        Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
-                .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
-                .rate(4).userLike(new ArrayList<>()).build();
+        Film film = Film.builder()
+                .id(0)
+                .name("Naprolom")
+                .description("Vse kruto")
+                .releaseDate(LocalDate.of(2015, 11, 5))
+                .duration(100)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
+        Film other = Film.builder()
+                .id(436346320)
+                .name("VVlastelin Kolec")
+                .description("Vse ochen kruto")
+                .releaseDate(LocalDate.of(2000, 11, 5))
+                .duration(500)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
         final ResponseEntity<Film> responseFilm = restTemplate.postForEntity(path, new HttpEntity<>(film), Film.class);
         final ResponseEntity<Film> responseOther = restTemplate.postForEntity(path, new HttpEntity<>(other),
                 Film.class);
@@ -102,17 +150,33 @@ public class FilmServiceTest {
 
     @Test
     public void addLikeNormal() {
-        Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
-                .rate(0).userLike(new ArrayList<>()).build();
-        Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
-                .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
-                .rate(4).userLike(new ArrayList<>()).build();
+        Film film = Film.builder()
+                .id(0)
+                .name("Naprolom")
+                .description("Vse kruto")
+                .releaseDate(LocalDate.of(2015, 11, 5))
+                .duration(100)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
+        Film other = Film.builder()
+                .id(436346320)
+                .name("VVlastelin Kolec")
+                .description("Vse ochen kruto")
+                .releaseDate(LocalDate.of(2000, 11, 5))
+                .duration(500)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
         final ResponseEntity<Film> responseFilm = restTemplate.postForEntity(path, new HttpEntity<>(film), Film.class);
         final ResponseEntity<Film> responseOther = restTemplate.postForEntity(path, new HttpEntity<>(other),
                 Film.class);
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> responseUser = restTemplate.postForEntity("/users",
                 new HttpEntity<>(user), User.class);
         film = responseFilm.getBody();
@@ -126,17 +190,33 @@ public class FilmServiceTest {
 
     @Test
     public void addLikeRepeat() {
-        Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
-                .rate(0).userLike(new ArrayList<>()).build();
-        Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
-                .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
-                .rate(4).userLike(new ArrayList<>()).build();
+        Film film = Film.builder()
+                .id(0)
+                .name("Naprolom")
+                .description("Vse kruto")
+                .releaseDate(LocalDate.of(2015, 11, 5))
+                .duration(100)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
+        Film other = Film.builder()
+                .id(436346320)
+                .name("VVlastelin Kolec")
+                .description("Vse ochen kruto")
+                .releaseDate(LocalDate.of(2000, 11, 5))
+                .duration(500)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
         final ResponseEntity<Film> responseFilm = restTemplate.postForEntity(path, new HttpEntity<>(film), Film.class);
         final ResponseEntity<Film> responseOther = restTemplate.postForEntity(path, new HttpEntity<>(other),
                 Film.class);
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> responseUser = restTemplate.postForEntity("/users",
                 new HttpEntity<>(user), User.class);
         film = responseFilm.getBody();
@@ -153,17 +233,33 @@ public class FilmServiceTest {
 
     @Test
     public void addLikeUnknown() {
-        Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
-                .rate(0).userLike(new ArrayList<>()).build();
-        Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
-                .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
-                .rate(4).userLike(new ArrayList<>()).build();
+        Film film = Film.builder()
+                .id(0)
+                .name("Naprolom")
+                .description("Vse kruto")
+                .releaseDate(LocalDate.of(2015, 11, 5))
+                .duration(100)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
+        Film other = Film.builder()
+                .id(436346320)
+                .name("VVlastelin Kolec")
+                .description("Vse ochen kruto")
+                .releaseDate(LocalDate.of(2000, 11, 5))
+                .duration(500)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
         final ResponseEntity<Film> responseFilm = restTemplate.postForEntity(path, new HttpEntity<>(film), Film.class);
         final ResponseEntity<Film> responseOther = restTemplate.postForEntity(path, new HttpEntity<>(other),
                 Film.class);
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> responseUser = restTemplate.postForEntity("/users",
                 new HttpEntity<>(user), User.class);
         user = responseUser.getBody();
@@ -176,17 +272,33 @@ public class FilmServiceTest {
 
     @Test
     public void deleteLikeNormal() {
-        Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
-                .rate(0).userLike(new ArrayList<>()).build();
-        Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
-                .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
-                .rate(4).userLike(new ArrayList<>()).build();
+        Film film = Film.builder()
+                .id(0)
+                .name("Naprolom")
+                .description("Vse kruto")
+                .releaseDate(LocalDate.of(2015, 11, 5))
+                .duration(100)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
+        Film other = Film.builder()
+                .id(436346320)
+                .name("VVlastelin Kolec")
+                .description("Vse ochen kruto")
+                .releaseDate(LocalDate.of(2000, 11, 5))
+                .duration(500)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
         final ResponseEntity<Film> responseFilm = restTemplate.postForEntity(path, new HttpEntity<>(film), Film.class);
         final ResponseEntity<Film> responseOther = restTemplate.postForEntity(path, new HttpEntity<>(other),
                 Film.class);
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> responseUser = restTemplate.postForEntity("/users",
                 new HttpEntity<>(user), User.class);
         film = responseFilm.getBody();
@@ -202,17 +314,33 @@ public class FilmServiceTest {
 
     @Test
     public void deleteLikeRepeat() {
-        Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
-                .rate(0).userLike(new ArrayList<>()).build();
-        Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
-                .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
-                .rate(4).userLike(new ArrayList<>()).build();
+        Film film = Film.builder()
+                .id(0)
+                .name("Naprolom")
+                .description("Vse kruto")
+                .releaseDate(LocalDate.of(2015, 11, 5))
+                .duration(100)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
+        Film other = Film.builder()
+                .id(436346320)
+                .name("VVlastelin Kolec")
+                .description("Vse ochen kruto")
+                .releaseDate(LocalDate.of(2000, 11, 5))
+                .duration(500)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
         final ResponseEntity<Film> responseFilm = restTemplate.postForEntity(path, new HttpEntity<>(film), Film.class);
         final ResponseEntity<Film> responseOther = restTemplate.postForEntity(path, new HttpEntity<>(other),
                 Film.class);
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> responseUser = restTemplate.postForEntity("/users",
                 new HttpEntity<>(user), User.class);
         film = responseFilm.getBody();
@@ -231,17 +359,33 @@ public class FilmServiceTest {
 
     @Test
     public void deleteLikeUnknown() {
-        Film film = Film.builder().id(0).name("Naprolom").description("Vse kruto")
-                .releaseDate(LocalDate.of(2015, 11, 5)).duration(100)
-                .rate(0).userLike(new ArrayList<>()).build();
-        Film other = Film.builder().id(436346320).name("VVlastelin Kolec").description("Vse ochen kruto")
-                .releaseDate(LocalDate.of(2000, 11, 5)).duration(500)
-                .rate(4).userLike(new ArrayList<>()).build();
+        Film film = Film.builder()
+                .id(0)
+                .name("Naprolom")
+                .description("Vse kruto")
+                .releaseDate(LocalDate.of(2015, 11, 5))
+                .duration(100)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
+        Film other = Film.builder()
+                .id(436346320)
+                .name("VVlastelin Kolec")
+                .description("Vse ochen kruto")
+                .releaseDate(LocalDate.of(2000, 11, 5))
+                .duration(500)
+                .rate(0)
+                .userLike(new ArrayList<>())
+                .build();
         final ResponseEntity<Film> responseFilm = restTemplate.postForEntity(path, new HttpEntity<>(film), Film.class);
         final ResponseEntity<Film> responseOther = restTemplate.postForEntity(path, new HttpEntity<>(other),
                 Film.class);
-        User user = User.builder().id(0).email("yandex@yandex.ru").name("Valerii Programist")
-                .login("VlP").birthday(LocalDate.of(1956, 11, 1)).build();
+        User user = User.builder()
+                .id(0)
+                .email("yandex@yandex.ru")
+                .name("Valerii Programist")
+                .login("VlP").birthday(LocalDate.of(1956, 11, 1))
+                .build();
         final ResponseEntity<User> responseUser = restTemplate.postForEntity("/users",
                 new HttpEntity<>(user), User.class);
         film = responseFilm.getBody();
