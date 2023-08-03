@@ -1,61 +1,64 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Getter
 public class FilmService {
-
-    private final InMemoryUserStorage userStorage;
-    private final InMemoryFilmStorage filmStorage;
+    private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
 
     @Autowired
-    public FilmService(InMemoryUserStorage userStorage, InMemoryFilmStorage filmStorage) {
+    public FilmService(UserStorage userStorage, FilmStorage filmStorage) {
         this.userStorage = userStorage;
         this.filmStorage = filmStorage;
     }
 
     public Film getFilmById(int filmId) {
-        if (filmStorage.getFilmMap().containsKey(filmId)) {
-            return filmStorage.getFilmMap().get(filmId);
+        if (filmStorage.getFilm(filmId) != null) {
+            return filmStorage.getFilm(filmId);
         } else {
             throw new NoSuchElementException("filmId");
         }
     }
 
     public void putLike(int filmId, int userId) {
-        if (!userStorage.getUserMap().containsKey(userId)) {
+        if (userStorage.getUser(userId) == null) {
             throw new NoSuchElementException("userId");
         }
-        if (!filmStorage.getFilmMap().containsKey(filmId)) {
+        if (filmStorage.getFilm(filmId) == null) {
             throw new NoSuchElementException("filmId");
         }
-        Film film = filmStorage.getFilmMap().get(filmId);
+        Film film = filmStorage.getFilm(filmId);
 
         if (film.getUserLike().contains(userId)) {
             throw new IllegalArgumentException("Пользователь уже поставил фильму лайк");
         }
-        filmStorage.getFilmMap().put(filmId, film.toBuilder()
+        film = film.toBuilder()
                 .rate(film.getRate() + 1)
                 .oneLike(userId)
-                .build());
+                .build();
+
+        filmStorage.putFilm(filmId, film);
     }
 
     public void deleteLike(int filmId, int userId) {
-        if (!userStorage.getUserMap().containsKey(userId)) {
+        if (userStorage.getUser(userId) == null) {
             throw new NoSuchElementException("userId");
         }
-        if (!filmStorage.getFilmMap().containsKey(filmId)) {
+        if (filmStorage.getFilm(filmId) == null) {
             throw new NoSuchElementException("filmId");
         }
-        Film film = filmStorage.getFilmMap().get(filmId);
+        Film film = filmStorage.getFilm(filmId);
 
         if (!film.getUserLike().contains(userId)) {
             throw new IllegalArgumentException("Пользователь еще не поставил фильму лайк");
@@ -65,10 +68,12 @@ public class FilmService {
                 .stream()
                 .filter(integer -> integer != userId)
                 .collect(Collectors.toList());
-        filmStorage.getFilmMap().put(filmId, film.toBuilder().rate(film.getRate() - 1)
+        film = film.toBuilder()
+                .rate(film.getRate() - 1)
                 .clearUserLike()
                 .userLike(filmLike)
-                .build());
+                .build();
+        filmStorage.putFilm(filmId, film);
     }
 
     public List<Film> getPopularFilm(int count) {

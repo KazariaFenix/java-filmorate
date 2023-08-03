@@ -34,7 +34,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User addUser(User user) {
-        if (userMap.keySet().contains(user.getId())) {
+        if (userMap.containsKey(user.getId())) {
             throw new NoSuchElementException("user");
         }
         user = buildIdUser(user);
@@ -45,7 +45,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User updateUser(User user) {
-        if (!userMap.keySet().contains(user.getId())) {
+        if (!userMap.containsKey(user.getId())) {
             throw new IllegalArgumentException("Данный юзер не существует");
         }
         user = buildNameUser(user);
@@ -53,7 +53,13 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    public Map<Integer, User> getUserMap() {
-        return userMap;
+    @Override
+    public User getUser(int userId) {
+        return userMap.get(userId);
+    }
+
+    @Override
+    public void putUser(int userId, User user) {
+        userMap.put(userId, user);
     }
 }

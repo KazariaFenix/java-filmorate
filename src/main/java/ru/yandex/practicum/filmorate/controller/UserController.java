@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -12,28 +11,26 @@ import java.util.*;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final InMemoryUserStorage storage;
     private final UserService service;
 
     @Autowired //обозначил зависимость, хотя помню, что если конструктор один, то можно и не отмечать
-    public UserController(InMemoryUserStorage storage, UserService service) {
-        this.storage = storage;
+    public UserController(UserService service) {
         this.service = service;
     }
 
     @GetMapping
     public List<User> getUserList() {
-        return storage.getUserList();
+        return service.getStorage().getUserList();
     }
 
     @PostMapping
     public User postUser(@Valid @RequestBody User user) {
-        return storage.addUser(user);
+        return service.getStorage().addUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        return storage.updateUser(user);
+        return service.getStorage().updateUser(user);
     }
 
     @GetMapping("/{id}")

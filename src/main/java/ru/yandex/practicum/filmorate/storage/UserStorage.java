@@ -10,4 +10,8 @@ public interface UserStorage {
     User addUser(User user);
 
     User updateUser(User user);
+
+    User getUser(int userId);
+
+    void putUser(int userId, User user);
 }
