@@ -14,7 +14,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     private User buildIdUser(User user) {
         idUser++;
-        return user.toBuilder().id(idUser).friends(new ArrayList<>()).build();
+        return user.toBuilder().id(idUser).friends(new LinkedHashMap<>()).build();
     }
 
     private User buildNameUser(User user) {
