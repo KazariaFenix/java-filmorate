@@ -1,22 +1,25 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import ru.yandex.practicum.filmorate.validator.IsAfter;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.List;
 
-@Data
-@AllArgsConstructor
+@Value
+@Builder(toBuilder = true)
 public class Film {
-    private int id;
+    private final int id;
     @NotBlank
-    private String name;
+    private final String name;
     @Size(max = 200)
-    private String description;
+    private final String description;
     @IsAfter(current = "1895_12_28")
-    private LocalDate releaseDate;
+    private final LocalDate releaseDate;
     @Positive
-    private int duration;
+    private final Integer duration;
+    private final Integer rate;
+    @Singular("oneLike")
+    private final List<Integer> userLike;
 }
