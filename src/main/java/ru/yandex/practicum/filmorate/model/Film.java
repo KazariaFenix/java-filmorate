@@ -20,6 +20,8 @@ public class Film {
     @Positive
     private final Integer duration;
     private final Integer rate;
+    private final List<FilmGenre> genre;
+    private final FilmRating rating;
     @Singular("oneLike")
     private final List<Integer> userLike;
 }

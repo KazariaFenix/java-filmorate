@@ -7,7 +7,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder(toBuilder = true)
@@ -23,5 +23,5 @@ public class User {
     @Past
     private final LocalDate birthday;
     @Singular
-    private final List<Integer> friends;
+    private final Map<Integer, Boolean> friends;
 }
