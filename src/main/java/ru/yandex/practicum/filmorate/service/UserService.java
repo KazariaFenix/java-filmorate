@@ -8,8 +8,9 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -39,14 +40,14 @@ public class UserService {
         User user = storage.getUser(userId);
         User friend = storage.getUser(friendId);
 
-        if (user.getFriends().contains(friendId)) {
+        if (user.getFriends().containsKey(friendId)) {
             throw new IllegalArgumentException("Данный пользователь уже добавлен в друзья");
         }
         user = user.toBuilder()
-                .friend(friendId)
+                .friend(friendId, true)
                 .build();
         friend = friend.toBuilder()
-                .friend(userId)
+                .friend(userId, true)
                 .build();
 
         storage.putUser(userId, user);
@@ -63,22 +64,22 @@ public class UserService {
         User user = storage.getUser(userId);
         User friend = storage.getUser(friendId);
 
-        if (!user.getFriends().contains(friendId)) {
+        if (!user.getFriends().containsKey(friendId)) {
             throw new IllegalArgumentException("Данный пользователь еще не добавлен в друзья");
         }
-        final List<Integer> userList = user.getFriends().stream()
-                .filter(integer -> !integer.equals(friendId))
-                .collect(Collectors.toList());
-        final List<Integer> friendList = friend.getFriends().stream()
-                .filter(integer -> !integer.equals(userId))
-                .collect(Collectors.toList());
+        final Map<Integer, Boolean> userFriends = new LinkedHashMap<>(user.getFriends());
+        userFriends.remove(friendId);
+
+        final Map<Integer, Boolean> otherFriends = new LinkedHashMap<>(friend.getFriends());
+        otherFriends.remove(userId);
+
         user = user.toBuilder()
                 .clearFriends()
-                .friends(userList)
+                .friends(userFriends)
                 .build();
         friend = friend.toBuilder()
                 .clearFriends()
-                .friends(friendList)
+                .friends(otherFriends)
                 .build();
 
         storage.putUser(userId, user);
@@ -92,7 +93,7 @@ public class UserService {
         final List<User> friends = new ArrayList<>();
         final User user = storage.getUser(userId);
 
-        for (Integer friend : user.getFriends()) {
+        for (Integer friend : user.getFriends().keySet()) {
             friends.add(storage.getUser(friend));
         }
         return friends;
@@ -109,8 +110,8 @@ public class UserService {
         final User user = storage.getUser(userId);
         final User other = storage.getUser(otherId);
 
-        for (Integer friend : user.getFriends()) {
-            if (other.getFriends().contains(friend)) {
+        for (Integer friend : user.getFriends().keySet()) {
+            if (other.getFriends().containsKey(friend)) {
                 mutualFriends.add(storage.getUser(friend));
             }
         }
