@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -8,8 +9,8 @@ import java.util.*;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
-
-    private final Map<Integer, User> userMap = new LinkedHashMap();
+    @Getter
+    private final Map<Long, User> userMap = new LinkedHashMap();
     private int idUser = 0;
 
     private User buildIdUser(User user) {
@@ -54,12 +55,15 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUser(int userId) {
-        return userMap.get(userId);
+    public User findUserById(long userId) {
+        if (userMap.get(userId) != null) {
+            return userMap.get(userId);
+        } else {
+            throw new NoSuchElementException("userId");
+        }
     }
 
-    @Override
-    public void putUser(int userId, User user) {
+    public void putUser(long userId, User user) {
         userMap.put(userId, user);
     }
 }

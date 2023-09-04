@@ -7,12 +7,14 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder(toBuilder = true)
 public class User {
-    private final int id;
+    private final long id;
     @Email
     @NotBlank
     private final String email;
@@ -24,4 +26,19 @@ public class User {
     private final LocalDate birthday;
     @Singular
     private final List<Integer> friends;
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> user = new HashMap<>();
+
+        user.put("email", email);
+        if (name == null || name.isBlank()) {
+            user.put("name", login);
+        } else {
+            user.put("name", name);
+        }
+        user.put("login", login);
+        user.put("birthday", birthday);
+
+        return user;
+    }
 }

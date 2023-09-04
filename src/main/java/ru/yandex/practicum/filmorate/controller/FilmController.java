@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.db.FilmServiceDb;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -11,10 +11,10 @@ import java.util.*;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final FilmService service;
+    private final FilmServiceDb service;
 
     @Autowired
-    public FilmController(FilmService service) {
+    public FilmController(FilmServiceDb service) {
         this.service = service;
     }
 
@@ -34,8 +34,8 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getUserDyId(@PathVariable int id) {
-        return service.getFilmById(id);
+    public Film getFilmById(@PathVariable int id) {
+        return service.getFilmStorage().findFilmById(id);
     }
 
     @PutMapping("/{id}/like/{userId}")

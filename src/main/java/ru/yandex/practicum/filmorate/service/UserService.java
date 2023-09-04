@@ -3,45 +3,43 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class UserService implements UserServiceInt {
     @Getter
-    private final UserStorage storage;
+    private final InMemoryUserStorage storage;
 
     @Autowired
-    UserService(UserStorage storage) {
+    UserService(InMemoryUserStorage storage) {
         this.storage = storage;
     }
 
-    public User getUserById(int userId) {
-        if (storage.getUser(userId) != null) {
-            return storage.getUser(userId);
-        } else {
-            throw new NoSuchElementException("userId");
+    @Override
+    public List<User> getFriendsList(long userId) {
+        final List<User> friends = new ArrayList<>();
+        final User user = storage.findUserById(userId);
+
+        for (Integer friend : user.getFriends()) {
+            friends.add(storage.findUserById(friend));
         }
+        return friends;
     }
 
+    @Override
     public void putFriend(int userId, int friendId) {
-        if (storage.getUser(userId) == null) {
-            throw new NoSuchElementException("userId");
-        }
-        if (storage.getUser(friendId) == null) {
-            throw new NoSuchElementException("friendId");
-        }
-        User user = storage.getUser(userId);
-        User friend = storage.getUser(friendId);
+        User user = storage.findUserById(userId);
+        User friend = storage.findUserById(friendId);
 
         if (user.getFriends().contains(friendId)) {
             throw new IllegalArgumentException("Данный пользователь уже добавлен в друзья");
         }
+
         user = user.toBuilder()
                 .friend(friendId)
                 .build();
@@ -53,15 +51,10 @@ public class UserService {
         storage.putUser(friendId, friend);
     }
 
+    @Override
     public void deleteFriend(int userId, int friendId) {
-        if (storage.getUser(userId) == null) {
-            throw new NoSuchElementException("userId");
-        }
-        if (storage.getUser(friendId) == null) {
-            throw new NoSuchElementException("friendId");
-        }
-        User user = storage.getUser(userId);
-        User friend = storage.getUser(friendId);
+        User user = storage.findUserById(userId);
+        User friend = storage.findUserById(friendId);
 
         if (!user.getFriends().contains(friendId)) {
             throw new IllegalArgumentException("Данный пользователь еще не добавлен в друзья");
@@ -85,33 +78,15 @@ public class UserService {
         storage.putUser(friendId, friend);
     }
 
-    public List<User> getFriends(int userId) {
-        if (storage.getUser(userId) == null) {
-            throw new NoSuchElementException("userId");
-        }
-        final List<User> friends = new ArrayList<>();
-        final User user = storage.getUser(userId);
-
-        for (Integer friend : user.getFriends()) {
-            friends.add(storage.getUser(friend));
-        }
-        return friends;
-    }
-
+    @Override
     public List<User> getMutualFriends(int userId, int otherId) {
-        if (storage.getUser(userId) == null) {
-            throw new NoSuchElementException("userId");
-        }
-        if (storage.getUser(otherId) == null) {
-            throw new NoSuchElementException("otherId");
-        }
         final List<User> mutualFriends = new ArrayList<>();
-        final User user = storage.getUser(userId);
-        final User other = storage.getUser(otherId);
+        final User user = storage.findUserById(userId);
+        final User other = storage.findUserById(otherId);
 
         for (Integer friend : user.getFriends()) {
             if (other.getFriends().contains(friend)) {
-                mutualFriends.add(storage.getUser(friend));
+                mutualFriends.add(storage.findUserById(friend));
             }
         }
         return mutualFriends;

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -9,7 +10,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
-
+    @Getter
     private final Map<Integer, Film> filmMap = new LinkedHashMap<>();
     private int idFilm = 0;
 
@@ -57,11 +58,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilm(int filmId) {
-        return filmMap.get(filmId);
+    public Film findFilmById(int filmId) {
+        if (filmMap.get(filmId) != null) {
+            return filmMap.get(filmId);
+        } else {
+            throw new NoSuchElementException("filmId");
+        }
     }
 
-    @Override
     public void putFilm(int filmId, Film film) {
         filmMap.put(filmId, film);
     }
