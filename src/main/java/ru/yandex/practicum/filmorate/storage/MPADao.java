@@ -7,5 +7,5 @@ import java.util.List;
 public interface MPADao {
     List<FilmMPA> getAllMPA();
 
-    FilmMPA getMPAById(long mpa_id);
+    FilmMPA getMPAById(long mpaId);
 }
