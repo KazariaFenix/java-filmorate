@@ -45,7 +45,7 @@ public class MPAImpl implements MPADao {
                     .id(mpaRow.getInt("mpa_id"))
                     .name(mpaRow.getString("title"))
                     .build();
-        }else {
+        } else {
             throw new NoSuchElementException("МРА с таким айди не существует");
         }
     }
