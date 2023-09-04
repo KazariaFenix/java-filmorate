@@ -73,6 +73,8 @@ public class FilmDbStorage implements FilmStorage {
                 film.getId());
         if (film.getGenres() != null) {
             updateGenre(film);
+        } else {
+            deleteGenre(film);
         }
         return findFilmById(film.getId());
     }
@@ -114,9 +116,13 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void updateGenre(Film film) {
+        deleteGenre(film);
+        addFilmGenres(film, film.getId());
+    }
+
+    private void deleteGenre(Film film) {
         String sqlDelete = "DELETE FROM films_genre WHERE film_id = ?";
         jdbcTemplate.update(sqlDelete, film.getId());
-        addFilmGenres(film, film.getId());
     }
 
     private void addFilmGenres(Film film, long key) {
