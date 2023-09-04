@@ -332,7 +332,7 @@ public class FilmorateDatabaseTest {
 
         filmService.putLike(firstFilm.getId(), (int) firstUser.getId());
         firstFilm = filmStorage.findFilmById(firstFilm.getId());
-        Set<Integer> like =firstFilm.getUserLike();
+        Set<Integer> like = firstFilm.getUserLike();
 
         assertThat(like).isEqualTo(Set.of(1));
     }
