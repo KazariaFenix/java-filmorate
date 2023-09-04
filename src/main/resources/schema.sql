@@ -1,4 +1,3 @@
-
 CREATE TABLE IF NOT EXISTS mpa(
 mpa_id integer PRIMARY KEY,
 title varchar(5)
