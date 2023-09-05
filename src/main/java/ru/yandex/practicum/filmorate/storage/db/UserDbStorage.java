@@ -150,6 +150,6 @@ public class UserDbStorage implements UserStorage {
         String sqlQuery = "SELECT * FROM user_friends WHERE user_id = ? AND friend_id = ?";
         SqlRowSet userFriends = jdbcTemplate.queryForRowSet(sqlQuery, userId, friendId);
 
-        return userFriends.next();
+        return !userFriends.next();
     }
 }

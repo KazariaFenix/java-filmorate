@@ -9,9 +9,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.service.db.FilmServiceDb;
-import ru.yandex.practicum.filmorate.service.db.UserServiceDb;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.*;
+import ru.yandex.practicum.filmorate.storage.db.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,11 +26,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class FilmorateDatabaseTest {
-
-    private final UserStorage userStorage;
-    private final UserServiceDb userService;
+    private final UserDbStorage userStorage;
+    private final UserService userService;
     private final FilmStorage filmStorage;
-    private final FilmServiceDb filmService;
+    private final FilmService filmService;
     private final MPAStorage mpaService;
     private final GenreStorage genreService;
     User firstUser;
@@ -176,9 +176,10 @@ public class FilmorateDatabaseTest {
     public void putFriendNormal() {
         firstUser = userStorage.addUser(firstUser);
         secondUser = userStorage.addUser(secondUser);
-        userService.putFriend((int) (firstUser.getId()), (int) secondUser.getId());
+        userStorage.putFriend((int) (firstUser.getId()), (int) secondUser.getId());
+        firstUser = userStorage.findUserById(firstUser.getId());
 
-        List<User> listFriends = userService.getFriendsList(firstUser.getId());
+        List<User> listFriends = userStorage.getFriendsList(firstUser.getId());
 
         assertThat(listFriends).asList().hasSize(1);
         assertThat(listFriends).asList().contains(userStorage.findUserById(secondUser.getId()));
