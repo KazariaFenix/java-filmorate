@@ -4,22 +4,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
-import ru.yandex.practicum.filmorate.storage.GenreDao;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-@Service
+@Repository
 @Primary
-public class GenreImpl implements GenreDao {
+public class GenreDbStorage implements GenreStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public GenreImpl(JdbcTemplate jdbcTemplate) {
+    public GenreDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

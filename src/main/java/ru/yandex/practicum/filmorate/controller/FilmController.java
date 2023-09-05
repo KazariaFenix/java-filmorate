@@ -20,22 +20,22 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getFilmList() {
-        return service.getFilmStorage().getFilmList();
+        return service.getFilmList();
     }
 
     @PostMapping
     public Film postFilm(@Valid @RequestBody Film film) {
-        return service.getFilmStorage().addFilm(film);
+        return service.addFilm(film);
     }
 
     @PutMapping
     public Film putFilm(@Valid @RequestBody Film film) {
-        return service.getFilmStorage().updateFilm(film);
+        return service.updateFilm(film);
     }
 
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable int id) {
-        return service.getFilmStorage().findFilmById(id);
+        return service.findFilmById(id);
     }
 
     @PutMapping("/{id}/like/{userId}")

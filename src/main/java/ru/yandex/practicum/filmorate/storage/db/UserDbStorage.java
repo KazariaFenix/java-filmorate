@@ -1,21 +1,23 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
 
-@Component
+@Repository
 @Primary
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
+    @Autowired
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -77,6 +79,56 @@ public class UserDbStorage implements UserStorage {
         return user;
     }
 
+    @Override
+    public List<User> getFriendsList(long userId) {
+        validationIdUser(userId);
+
+        String sqlQuery = "SELECT friend_id FROM user_friends WHERE user_id = ?";
+        List<User> friends = jdbcTemplate.query(sqlQuery, (rs, rowNum) ->
+                findUserById(rs.getInt("friend_id")), userId);
+        return friends;
+    }
+
+    @Override
+    public void putFriend(int userId, int friendId) {
+        validationIdUser(userId);
+        validationIdUser(friendId);
+        if (isFriends(userId, friendId)) {
+            String sqlQuery = "MERGE INTO user_friends (user_id, friend_id) VALUES (?, ?)";
+            jdbcTemplate.update(sqlQuery, userId, friendId);
+        } else {
+            throw new IllegalArgumentException("Данный пользователь уже добавлен в друзья");
+        }
+    }
+
+    @Override
+    public void deleteFriend(int userId, int friendId) {
+        validationIdUser(userId);
+        validationIdUser(friendId);
+        if (!isFriends(userId, friendId)) {
+            String sqlQuery = "DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?";
+            jdbcTemplate.update(sqlQuery, userId, friendId);
+        } else {
+            throw new IllegalArgumentException("Данный пользователь не ваш друг");
+        }
+    }
+
+    @Override
+    public List<User> getMutualFriends(int userId, int otherId) {
+        validationIdUser(userId);
+        validationIdUser(otherId);
+
+        String sqlQuery = "SELECT friend_id FROM user_friends WHERE user_id = ? AND  friend_id IN " +
+                "(SELECT friend_id FROM user_friends WHERE user_id = ?)";
+        Set<User> mutualFriends = new HashSet<>();
+        SqlRowSet friends = jdbcTemplate.queryForRowSet(sqlQuery, userId, otherId);
+
+        if (friends.next()) {
+            mutualFriends.add(findUserById(friends.getLong("friend_id")));
+        }
+        return new ArrayList<>(mutualFriends);
+    }
+
     private void validationIdUser(long userId) {
         SqlRowSet sqlUser = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE id = ?", userId);
 
@@ -91,7 +143,13 @@ public class UserDbStorage implements UserStorage {
                     .name(user.getLogin())
                     .build();
         }
-
         return user;
+    }
+
+    private boolean isFriends(long userId, long friendId) {
+        String sqlQuery = "SELECT * FROM user_friends WHERE user_id = ? AND friend_id = ?";
+        SqlRowSet userFriends = jdbcTemplate.queryForRowSet(sqlQuery, userId, friendId);
+
+        return userFriends.next();
     }
 }

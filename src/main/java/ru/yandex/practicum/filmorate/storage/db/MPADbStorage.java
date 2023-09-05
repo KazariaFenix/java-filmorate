@@ -1,23 +1,25 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.FilmMPA;
-import ru.yandex.practicum.filmorate.storage.MPADao;
+import ru.yandex.practicum.filmorate.storage.MPAStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-@Service
+@Repository
 @Primary
-public class MPAImpl implements MPADao {
+public class MPADbStorage implements MPAStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    public MPAImpl(JdbcTemplate jdbcTemplate) {
+    @Autowired
+    public MPADbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

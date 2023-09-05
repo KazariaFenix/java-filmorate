@@ -1,40 +1,33 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.MPADao;
+import ru.yandex.practicum.filmorate.storage.MPAStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-@Component
+@Repository
 @Primary
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-    private final GenreImpl genre;
-    private final MPADao mpa;
+    private final GenreDbStorage genre;
+    private final MPAStorage mpa;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreImpl genre, MPADao mpa) {
+    @Autowired
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genre, MPAStorage mpa) {
         this.jdbcTemplate = jdbcTemplate;
         this.genre = genre;
         this.mpa = mpa;
-    }
-
-    private void validationFilm(long filmId) {
-        String sqlQuery = "SELECT * FROM films WHERE film_id = ?";
-        SqlRowSet film = jdbcTemplate.queryForRowSet(sqlQuery, filmId);
-
-        if (!film.next()) {
-            throw new NoSuchElementException("Фильма с таким идентификатором не существует");
-        }
     }
 
     @Override
@@ -107,6 +100,40 @@ public class FilmDbStorage implements FilmStorage {
         return film;
     }
 
+    @Override
+    public void putLike(int filmId, int userId) {
+        if (validationUserLike(filmId, userId)) {
+            throw new NoSuchElementException("Данный пользователь уже поставил лайк этому фильму");
+        }
+        String sqlUserLike = "MERGE INTO users_like (film_id, user_id) VALUES (?, ?)";
+        String sqlRate = "UPDATE films SET rate = ? WHERE film_id = ?";
+        Film film = findFilmById(filmId);
+
+        jdbcTemplate.update(sqlUserLike, filmId, userId);
+        jdbcTemplate.update(sqlRate, (film.getRate() + 1), filmId);
+    }
+
+    @Override
+    public void deleteLike(int filmId, int userId) {
+        if (!validationUserLike(filmId, userId)) {
+            throw new NoSuchElementException("Данный пользователь не ставил лайк этому фильму");
+        }
+        String sqlUserLike = "DELETE FROM users_like WHERE film_id = ? AND user_id = ?";
+        String sqlRate = "UPDATE films SET rate = ? WHERE film_id = ?";
+        Film film = findFilmById(filmId);
+
+        jdbcTemplate.update(sqlUserLike, filmId, userId);
+        jdbcTemplate.update(sqlRate, (film.getRate() - 1), filmId);
+    }
+
+    @Override
+    public List<Film> getPopularFilm(int count) {
+        String sqlQuery = "SELECT * FROM films ORDER BY rate DESC LIMIT ?;";
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
+                count);
+    }
+
     private FilmGenre makeGenre(ResultSet rs) throws SQLException {
         return genre.getGenreById(rs.getInt("genre_id"));
     }
@@ -131,6 +158,22 @@ public class FilmDbStorage implements FilmStorage {
         for (FilmGenre genre : filmGenres) {
             String sqlFilmGenres = "MERGE INTO films_genre (film_id, genre_id) VALUES (?, ?)";
             jdbcTemplate.update(sqlFilmGenres, key, genre.getId());
+        }
+    }
+
+    private boolean validationUserLike(int filmId, int userId) {
+        String sqlQuery = "SELECT * FROM users_like WHERE film_id =? AND user_id = ?";
+        SqlRowSet userLike = jdbcTemplate.queryForRowSet(sqlQuery, filmId, userId);
+
+        return userLike.next();
+    }
+
+    private void validationFilm(long filmId) {
+        String sqlQuery = "SELECT * FROM films WHERE film_id = ?";
+        SqlRowSet film = jdbcTemplate.queryForRowSet(sqlQuery, filmId);
+
+        if (!film.next()) {
+            throw new NoSuchElementException("Фильма с таким идентификатором не существует");
         }
     }
 }

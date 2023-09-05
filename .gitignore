@@ -1,6 +1,7 @@
 HELP.md
 target/
 .mvn/wrapper/
+db/filmorate.mv.db
 !**/src/main/**/target/
 !**/src/test/**/target/
 

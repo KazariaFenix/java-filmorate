@@ -20,22 +20,22 @@ public class UserController {
 
     @GetMapping
     public List<User> getUserList() {
-        return service.getUserStorage().getUserList();
+        return service.getUserList();
     }
 
     @PostMapping
     public User postUser(@Valid @RequestBody User user) {
-        return service.getUserStorage().addUser(user);
+        return service.addUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        return service.getUserStorage().updateUser(user);
+        return service.updateUser(user);
     }
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable int id) {
-        return service.getUserStorage().findUserById(id);
+        return service.findUserById(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")

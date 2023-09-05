@@ -30,8 +30,8 @@ public class FilmorateDatabaseTest {
     private final UserServiceDb userService;
     private final FilmStorage filmStorage;
     private final FilmServiceDb filmService;
-    private final MPADao mpaService;
-    private final GenreDao genreService;
+    private final MPAStorage mpaService;
+    private final GenreStorage genreService;
     User firstUser;
     User secondUser;
     User thirdUser;

@@ -1,21 +1,18 @@
-package ru.yandex.practicum.filmorate.service.db;
+package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
-import java.util.List;
+import java.util.*;
 
 @Service
-@Primary
-public class FilmServiceDb implements FilmService {
-    private final FilmStorage filmStorage;
+public class InMemoryFilmService implements FilmService {
+    private final InMemoryFilmStorage filmStorage;
 
     @Autowired
-    public FilmServiceDb(FilmStorage filmStorage) {
+    public InMemoryFilmService(InMemoryFilmStorage filmStorage) {
         this.filmStorage = filmStorage;
     }
 
