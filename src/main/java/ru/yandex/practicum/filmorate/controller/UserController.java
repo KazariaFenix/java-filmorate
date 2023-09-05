@@ -13,6 +13,7 @@ import java.util.*;
 public class UserController {
     private final UserServiceDb service;
 
+    @Autowired
     public UserController(UserServiceDb service) {
         this.service = service;
     }

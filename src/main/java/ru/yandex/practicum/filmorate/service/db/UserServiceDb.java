@@ -14,6 +14,7 @@ import java.util.*;
 public class UserServiceDb implements UserService {
     private final UserStorage userStorage;
 
+    @Autowired
     public UserServiceDb(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
