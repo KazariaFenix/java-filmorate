@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.db.UserServiceDb;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -11,31 +11,31 @@ import java.util.*;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final UserService service;
+    private final UserServiceDb service;
 
-    @Autowired //обозначил зависимость, хотя помню, что если конструктор один, то можно и не отмечать
-    public UserController(UserService service) {
+    @Autowired
+    public UserController(UserServiceDb service) {
         this.service = service;
     }
 
     @GetMapping
     public List<User> getUserList() {
-        return service.getStorage().getUserList();
+        return service.getUserList();
     }
 
     @PostMapping
     public User postUser(@Valid @RequestBody User user) {
-        return service.getStorage().addUser(user);
+        return service.addUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        return service.getStorage().updateUser(user);
+        return service.updateUser(user);
     }
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable int id) {
-        return service.getUserById(id);
+        return service.findUserById(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
@@ -50,7 +50,7 @@ public class UserController {
 
     @GetMapping("/{id}/friends")
     public List<User> getFriends(@PathVariable int id) {
-        return service.getFriends(id);
+        return service.getFriendsList(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")

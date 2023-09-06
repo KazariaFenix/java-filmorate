@@ -1,16 +1,123 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-@Component
+@Repository
 public class InMemoryUserStorage implements UserStorage {
-
     private final Map<Integer, User> userMap = new LinkedHashMap();
     private int idUser = 0;
+
+    @Override
+    public List<User> getUserList() {
+        return new ArrayList<>(userMap.values());
+    }
+
+    @Override
+    public User addUser(User user) {
+        if (userMap.containsKey(user.getId())) {
+            throw new NoSuchElementException("user");
+        }
+        user = buildIdUser(user);
+        user = buildNameUser(user);
+        userMap.put((int) user.getId(), user);
+        return user;
+    }
+
+    @Override
+    public User updateUser(User user) {
+        if (!userMap.containsKey(user.getId())) {
+            throw new IllegalArgumentException("Данный юзер не существует");
+        }
+        user = buildNameUser(user);
+        userMap.put((int) user.getId(), user);
+        return user;
+    }
+
+    @Override
+    public User findUserById(long userId) {
+        if (userMap.get(userId) != null) {
+            return userMap.get(userId);
+        } else {
+            throw new NoSuchElementException("userId");
+        }
+    }
+
+    @Override
+    public List<User> getFriendsList(long userId) {
+        final List<User> friends = new ArrayList<>();
+        final User user = findUserById(userId);
+
+        for (Integer friend : user.getFriends()) {
+            friends.add(findUserById(friend));
+        }
+        return friends;
+    }
+
+    @Override
+    public void putFriend(int userId, int friendId) {
+        User user = findUserById(userId);
+        User friend = findUserById(friendId);
+
+        if (user.getFriends().contains(friendId)) {
+            throw new IllegalArgumentException("Данный пользователь уже добавлен в друзья");
+        }
+
+        user = user.toBuilder()
+                .friend(friendId)
+                .build();
+        friend = friend.toBuilder()
+                .friend(userId)
+                .build();
+
+        userMap.put(userId, user);
+        userMap.put(friendId, friend);
+    }
+
+    @Override
+    public void deleteFriend(int userId, int friendId) {
+        User user = findUserById(userId);
+        User friend = findUserById(friendId);
+
+        if (!user.getFriends().contains(friendId)) {
+            throw new IllegalArgumentException("Данный пользователь еще не добавлен в друзья");
+        }
+        final List<Integer> userList = user.getFriends().stream()
+                .filter(integer -> !integer.equals(friendId))
+                .collect(Collectors.toList());
+        final List<Integer> friendList = friend.getFriends().stream()
+                .filter(integer -> !integer.equals(userId))
+                .collect(Collectors.toList());
+        user = user.toBuilder()
+                .clearFriends()
+                .friends(userList)
+                .build();
+        friend = friend.toBuilder()
+                .clearFriends()
+                .friends(friendList)
+                .build();
+
+        userMap.put(userId, user);
+        userMap.put(friendId, friend);
+    }
+
+    @Override
+    public List<User> getMutualFriends(int userId, int otherId) {
+        final List<User> mutualFriends = new ArrayList<>();
+        final User user = findUserById(userId);
+        final User other = findUserById(otherId);
+
+        for (Integer friend : user.getFriends()) {
+            if (other.getFriends().contains(friend)) {
+                mutualFriends.add(findUserById(friend));
+            }
+        }
+        return mutualFriends;
+    }
 
     private User buildIdUser(User user) {
         idUser++;
@@ -25,41 +132,5 @@ public class InMemoryUserStorage implements UserStorage {
             user = user.toBuilder().friends(userMap.get(user.getId()).getFriends()).build();
         }
         return user;
-    }
-
-    @Override
-    public List<User> getUserList() {
-        return new ArrayList<>(userMap.values());
-    }
-
-    @Override
-    public User addUser(User user) {
-        if (userMap.containsKey(user.getId())) {
-            throw new NoSuchElementException("user");
-        }
-        user = buildIdUser(user);
-        user = buildNameUser(user);
-        userMap.put(user.getId(), user);
-        return user;
-    }
-
-    @Override
-    public User updateUser(User user) {
-        if (!userMap.containsKey(user.getId())) {
-            throw new IllegalArgumentException("Данный юзер не существует");
-        }
-        user = buildNameUser(user);
-        userMap.put(user.getId(), user);
-        return user;
-    }
-
-    @Override
-    public User getUser(int userId) {
-        return userMap.get(userId);
-    }
-
-    @Override
-    public void putUser(int userId, User user) {
-        userMap.put(userId, user);
     }
 }
