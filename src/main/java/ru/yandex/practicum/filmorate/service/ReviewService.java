@@ -21,5 +21,5 @@ public interface ReviewService {
 
     void deleteDislikeReview(int reviewId, int userId);
 
-    List<Review> getReview(int filmId, int count);
+    List<Review> getReview(Integer filmId, Integer count);
 }

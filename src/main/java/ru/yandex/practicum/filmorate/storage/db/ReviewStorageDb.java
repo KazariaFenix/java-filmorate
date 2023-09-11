@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
+import javax.validation.ValidationException;
 import java.util.List;
 
 @Component
@@ -30,9 +31,9 @@ public class ReviewStorageDb implements ReviewStorage {
                     .usingGeneratedKeyColumns("review_id");
             return getReviewById(simpleJdbcInsert.executeAndReturnKey(review.toMap()).intValue());
         } else if (!filmStorage.getFilmList().contains(filmStorage.findFilmById(review.getFilmId()))) {
-            throw new NoSuchElementException("Проверьте id фильма");
+            throw new ValidationException("Проверьте id фильма");
         } else {
-            throw new NoSuchElementException("Проверьте id пользователя");
+            throw new ValidationException("Проверьте id пользователя");
         }
 
     }
@@ -40,7 +41,7 @@ public class ReviewStorageDb implements ReviewStorage {
     @Override
     public Review getReviewById(int reviewId) {
         if (validationReview(reviewId)) {
-            return jdbcTemplate.queryForObject("SELECT reviews.*" +
+            return jdbcTemplate.queryForObject("SELECT reviews.* " +
                     "FROM reviews" +
                     "WHERE review_id = ?", (resultSet, rowNum) ->
                     Review.builder()
@@ -59,7 +60,7 @@ public class ReviewStorageDb implements ReviewStorage {
 
     @Override
     public List<Review> getReview(Integer count) {
-        return jdbcTemplate.query("SELECT reviews.*" +
+        return jdbcTemplate.query("SELECT reviews.* " +
                 "FROM reviews\n" +
                 "ORDER BY useful DESC LIMIT ?", (resultSet, rowNum) ->
                 Review.builder()
@@ -75,7 +76,7 @@ public class ReviewStorageDb implements ReviewStorage {
     @Override
     public List<Review> getReviewByFilmId(int filmId, int count) {
         if (filmStorage.getFilmList().contains(filmStorage.findFilmById(filmId))) {
-            return jdbcTemplate.query("SELECT reviews.*" +
+            return jdbcTemplate.query("SELECT reviews.* " +
                     "FROM reviews\n" +
                     "WHERE film_id = ?\n" +
                     "ORDER BY useful DESC LIMIT ?", (resultSet, rowNum) ->
@@ -189,7 +190,7 @@ public class ReviewStorageDb implements ReviewStorage {
     }
 
     private boolean validationReview(int id) {
-        SqlRowSet sqlUser = jdbcTemplate.queryForRowSet("SELECT reviews.*" +
+        SqlRowSet sqlUser = jdbcTemplate.queryForRowSet("SELECT reviews.* " +
                 "FROM reviews" +
                 "WHERE review_id = ?", id);
         return sqlUser.next();

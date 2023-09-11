@@ -14,8 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewServiceDb implements ReviewService {
     private final ReviewStorage reviewStorage;
-    private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+
 
     @Override
     public Review createReview(Review review) {
@@ -59,11 +58,11 @@ public class ReviewServiceDb implements ReviewService {
     }
 
     @Override
-    public List<Review> getReview(int filmId, int count) {
-        if (count == 0) {
+    public List<Review> getReview(Integer filmId, Integer count) {
+        if (count == null || count == 0) {
             count = 10;
         }
-        if (filmId == 0) {
+        if (filmId == null || filmId == 0) {
             return reviewStorage.getReview(count);
         } else {
             return reviewStorage.getReviewByFilmId(filmId, count);
