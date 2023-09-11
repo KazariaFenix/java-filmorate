@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.ReviewService;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
 
@@ -15,7 +13,6 @@ import java.util.List;
 public class ReviewServiceDb implements ReviewService {
     private final ReviewStorage reviewStorage;
 
-
     @Override
     public Review createReview(Review review) {
         return reviewStorage.createReview(review);
@@ -23,7 +20,6 @@ public class ReviewServiceDb implements ReviewService {
 
     @Override
     public Review getReviewById(int reviewId) {
-
         return reviewStorage.getReviewById(reviewId);
     }
 
@@ -67,6 +63,5 @@ public class ReviewServiceDb implements ReviewService {
         } else {
             return reviewStorage.getReviewByFilmId(filmId, count);
         }
-
     }
 }
