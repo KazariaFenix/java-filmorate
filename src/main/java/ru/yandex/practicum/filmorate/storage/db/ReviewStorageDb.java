@@ -40,7 +40,7 @@ public class ReviewStorageDb implements ReviewStorage {
     public Review getReviewById(int reviewId) {
         if (validationReview(reviewId)) {
             return jdbcTemplate.queryForObject("SELECT *\n " +
-                    "FROM reviews" +
+                    "FROM reviews\n" +
                     "WHERE review_id = ?", (resultSet, rowNum) ->
                     Review.builder()
                             .reviewId(resultSet.getInt("review_id"))
@@ -79,7 +79,7 @@ public class ReviewStorageDb implements ReviewStorage {
             throw new ValidationException(e.getMessage());
         }
         return jdbcTemplate.query("SELECT *\n " +
-                "FROM reviews\n" +
+                "FROM reviews\n " +
                 "WHERE film_id = ?\n" +
                 "ORDER BY useful DESC LIMIT ?", (resultSet, rowNum) ->
                 Review.builder()
@@ -200,7 +200,7 @@ public class ReviewStorageDb implements ReviewStorage {
 
     private boolean validationReview(int id) {
         SqlRowSet sqlUser = jdbcTemplate.queryForRowSet("SELECT *\n " +
-                "FROM reviews" +
+                "FROM reviews\n" +
                 "WHERE review_id = ?", id);
         return sqlUser.next();
     }
