@@ -32,7 +32,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handlerSql(final MethodArgumentNotValidException e) {
         return new ErrorResponse("Проверьте id фильма или id пользователя");
     }
