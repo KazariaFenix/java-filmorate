@@ -21,7 +21,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handlerNoSuch(final NoSuchElementException e) {
-        return new ErrorResponse("Элемент " + e.getParam() + " не найден");
+        return new ErrorResponse("Элемент " + e.getParam() + "  не найден");
     }
 
     @ExceptionHandler
