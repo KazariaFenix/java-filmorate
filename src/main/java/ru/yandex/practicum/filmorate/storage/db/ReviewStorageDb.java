@@ -99,7 +99,7 @@ public class ReviewStorageDb implements ReviewStorage {
                             "SET content = ?, is_positive = ?\n" +
                             "WHERE review_id = ?",
                     review.getContent(),
-                    review.isPositive(), review.getReviewId());
+                    review.getIsPositive(), review.getReviewId());
 
             return getReviewById(review.getReviewId());
         } else {

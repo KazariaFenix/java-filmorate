@@ -20,7 +20,7 @@ public class Review {
     @NotBlank
     private String content;
     @NotNull
-    private boolean isPositive;
+    private Boolean isPositive;
     @NotNull
     private int userId;
     @NotNull
