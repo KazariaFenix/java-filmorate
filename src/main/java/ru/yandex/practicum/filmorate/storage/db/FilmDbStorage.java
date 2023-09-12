@@ -128,8 +128,9 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getPopularFilm(int count) {
-        String sqlQuery = "SELECT * FROM films ORDER BY rate DESC LIMIT ?;";
-
+        String sqlQuery = "select *\n" +
+                "from FILMS  F LEFT JOIN  users_like L on F.FILM_ID  = L.FILM_ID\n " +
+                "GROUP BY F.FILM_ID, L.USER_ID ORDER BY COUNT(L.USER_ID) DESC LIMIT ?";
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
                 count);
     }
