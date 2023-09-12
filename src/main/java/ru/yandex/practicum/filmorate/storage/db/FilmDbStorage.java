@@ -169,9 +169,11 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void validationFilm(long filmId) {
+        if (filmId == 0) {
+            throw new java.util.NoSuchElementException();
+        }
         String sqlQuery = "SELECT * FROM films WHERE film_id = ?";
         SqlRowSet film = jdbcTemplate.queryForRowSet(sqlQuery, filmId);
-
         if (!film.next()) {
             throw new NoSuchElementException("Фильма с таким идентификатором не существует");
         }
