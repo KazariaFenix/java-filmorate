@@ -24,6 +24,9 @@ public class ReviewStorageDb implements ReviewStorage {
 
     @Override
     public Review createReview(Review review) {
+        if (review.getUserId() < 0 || review.getFilmId() < 0) {
+            throw new ValidationException();
+        }
         try {
             filmStorage.findFilmById(review.getFilmId());
             userStorage.findUserById(review.getUserId());
@@ -73,11 +76,7 @@ public class ReviewStorageDb implements ReviewStorage {
 
     @Override
     public List<Review> getReviewByFilmId(int filmId, int count) {
-        try {
-            filmStorage.findFilmById(filmId);
-        } catch (NoSuchElementException e) {
-            throw new ValidationException(e.getMessage());
-        }
+        filmStorage.findFilmById(filmId);
         return jdbcTemplate.query("SELECT *\n " +
                 "FROM reviews\n " +
                 "WHERE film_id = ?\n" +
