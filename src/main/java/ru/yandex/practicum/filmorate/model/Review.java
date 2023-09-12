@@ -22,10 +22,8 @@ public class Review {
     @NotNull
     private Boolean isPositive;
     @NotNull
-    @NotBlank
     private int userId;
     @NotNull
-    @NotBlank
     private int filmId;
     private int useful;
 

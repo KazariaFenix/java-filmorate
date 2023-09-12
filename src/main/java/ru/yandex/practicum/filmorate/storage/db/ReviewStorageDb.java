@@ -23,8 +23,12 @@ public class ReviewStorageDb implements ReviewStorage {
 
     @Override
     public Review createReview(Review review) {
-        filmStorage.findFilmById(review.getFilmId());
-        userStorage.findUserById(review.getUserId());
+        try {
+            filmStorage.findFilmById(review.getFilmId());
+            userStorage.findUserById(review.getUserId());
+        } catch (NoSuchElementException e) {
+            throw new java.util.NoSuchElementException(e.getMessage());
+        }
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reviews")
                 .usingGeneratedKeyColumns("review_id");
