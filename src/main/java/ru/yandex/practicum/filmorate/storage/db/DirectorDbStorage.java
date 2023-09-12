@@ -28,10 +28,10 @@ public class DirectorDbStorage {
     }
 
     public Director addDirector(Director director) {
-        String sqlQuery = "INSERT into directors(name) VALUES (?);";
+        String sqlQuery = "INSERT INTO directors(name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement stmt = con.prepareStatement(sqlQuery, new String[]{"film_id"});
+        jdbcTemplate.update(connection -> {
+            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"director_id"});
             stmt.setString(1, director.getName());
             return stmt;
         }, keyHolder);
@@ -72,15 +72,10 @@ public class DirectorDbStorage {
     }
 
     public boolean killDirectorById (int id) {
-        int countDirectorsTable = jdbcTemplate.update("DELETE FROM directors WHERE director_id = ?", id);
-        int countConnectionTable = jdbcTemplate.update("DELETE FROM films_directors WEHRE directir_id = ?", id);
-        if (countConnectionTable > 0 && countDirectorsTable > 0) return true;
-        else {
-            log.debug(
-                    "Couldn't delete director id={}. Delete status from directors table is {}. " +
-                            "Delete status for connection table is {}", id, countDirectorsTable, countConnectionTable);
-            return false;
-        }
+        String sqlQuery = "delete from directors " +
+                "where director_id = ?";
+        int status = jdbcTemplate.update(sqlQuery, id);
+        return status != 0;
     }
 }
 

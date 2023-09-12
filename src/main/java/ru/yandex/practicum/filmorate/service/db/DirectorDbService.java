@@ -1,14 +1,15 @@
 package ru.yandex.practicum.filmorate.service.db;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.db.DirectorDbStorage;
 
 import javax.validation.ValidationException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
+@Service
 public class DirectorDbService {
 
     DirectorDbStorage directorDbStorage;
@@ -18,15 +19,6 @@ public class DirectorDbService {
     DirectorDbService(DirectorDbStorage directorDbStorage) {
         this.directorDbStorage = directorDbStorage;
     }
-
-    /*
-    GET /films/director/{directorId}?sortBy=[year,likes]
-    ✅ GET /directors - Список всех режиссёров
-    ✅ GET /directors/{id}- Получение режиссёра по id
-    ✅ POST /directors - Создание режиссёра
-    ✅ PUT /directors - Изменение режиссёра
-    DELETE /directors/{id} - Удаление режиссёра
-     */
 
     private Director valid(Director director) {
         if (director == null) throw new ValidationException("Director is null");
