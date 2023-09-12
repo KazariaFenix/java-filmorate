@@ -54,7 +54,7 @@ public class ReviewStorageDb implements ReviewStorage {
                             .useful(resultSet.getInt("useful"))
                             .build(), reviewId);
         } else {
-            throw new ValidationException("Проверьте id отзыва");
+            throw new NoSuchElementException("Проверьте id отзыва");
         }
 
     }
