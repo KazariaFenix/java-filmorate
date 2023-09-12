@@ -133,7 +133,7 @@ public class FilmDbStorage implements FilmStorage {
                 "GROUP BY F.FILM_ID, L.USER_ID ORDER BY COUNT(L.USER_ID) DESC LIMIT ?";
         List<Film> list = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
                 count);
-        Set<Film> filmSet = new LinkedHashSet<>(list);
+        Set<Film> filmSet = new HashSet<>(list);
         list.clear();
         list.addAll(filmSet);
         return list;
