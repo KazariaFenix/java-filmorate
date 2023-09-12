@@ -169,12 +169,14 @@ public class ReviewStorageDb implements ReviewStorage {
         if (!validationReview(reviewId)) {
             throw new ValidationException("Проверьте id отзыва");
         } else {
-            jdbcTemplate.update("DELETE FROM reviews_users\n" +
+            int del = jdbcTemplate.update("DELETE FROM reviews_users\n" +
                     "WHERE review_id = ? AND user_id = ?", reviewId, userId);
+            if (del == 1) {
+                jdbcTemplate.update("UPDATE reviews\n" +
+                        "SET useful = useful - 1\n" +
+                        "where review_id = ?", reviewId);
+            }
 
-            jdbcTemplate.update("UPDATE reviews\n" +
-                    "SET useful = useful - 1\n" +
-                    "where review_id = ?", reviewId);
         }
     }
 
@@ -188,12 +190,14 @@ public class ReviewStorageDb implements ReviewStorage {
         if (!validationReview(reviewId)) {
             throw new ValidationException("Проверьте id отзыва");
         } else {
-            jdbcTemplate.update("DELETE FROM reviews_users\n" +
+            int del = jdbcTemplate.update("DELETE FROM reviews_users\n" +
                     "WHERE review_id = ? AND user_id = ?", reviewId, userId);
+            if (del == 1) {
+                jdbcTemplate.update("UPDATE reviews\n" +
+                        "SET useful = useful + 1\n" +
+                        "where review_id = ?", reviewId);
+            }
 
-            jdbcTemplate.update("UPDATE reviews\n" +
-                    "SET useful = useful + 1\n" +
-                    "where review_id = ?", reviewId);
         }
     }
 
