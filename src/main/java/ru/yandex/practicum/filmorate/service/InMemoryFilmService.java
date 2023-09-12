@@ -47,7 +47,7 @@ public class InMemoryFilmService implements FilmService {
     }
 
     @Override
-    public List<Film> getPopularFilm(int count) {
-        return filmStorage.getPopularFilm(count);
+    public List<Film> getPopularFilm(int count, int genreId, int year) {
+        return filmStorage.getPopularFilm(count, genreId, year);
     }
 }

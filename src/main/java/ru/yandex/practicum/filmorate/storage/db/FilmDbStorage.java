@@ -127,11 +127,32 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopularFilm(int count) {
-        String sqlQuery = "SELECT * FROM films ORDER BY rate DESC LIMIT ?;";
+    public List<Film> getPopularFilm(int count, int genreId, int year) {
+        if (genreId == 0 && year == 0) {
+            String sqlQuery = "SELECT * FROM films ORDER BY rate DESC LIMIT ?";
+
+            return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
+                    count);
+        }
+        if (genreId == 0) {
+            String sqlQuery = "SELECT * FROM films WHERE EXTRACT (YEAR FROM CAST(release_date AS date)) = ?" +
+                    " ORDER BY rate DESC LIMIT ?";
+
+            return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
+                    year, count);
+        }
+        if (year == 0) {
+            String sqlQuery = "SELECT * FROM films WHERE " +
+                    "film_id IN (SELECT film_id FROM films_genre WHERE genre_id = ?) ORDER BY rate DESC LIMIT ?";
+
+            return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
+                    genreId, count);
+        }
+        String sqlQuery = "SELECT * FROM films WHERE EXTRACT (YEAR FROM CAST(release_date AS date)) = ? AND " +
+                "film_id IN (SELECT film_id FROM films_genre WHERE genre_id = ?) ORDER BY rate DESC LIMIT ?";
 
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
-                count);
+                year, genreId, count);
     }
 
     private FilmGenre makeGenre(ResultSet rs) throws SQLException {

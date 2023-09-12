@@ -3,9 +3,11 @@ package ru.yandex.practicum.filmorate.service.db;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.db.EventDbStorage;
 
 import java.util.List;
 
@@ -13,10 +15,12 @@ import java.util.List;
 @Primary
 public class FilmServiceDb implements FilmService {
     private final FilmStorage filmStorage;
+    private final EventDbStorage eventStorage;
 
     @Autowired
-    public FilmServiceDb(FilmStorage filmStorage) {
+    public FilmServiceDb(FilmStorage filmStorage, EventDbStorage eventStorage) {
         this.filmStorage = filmStorage;
+        this.eventStorage = eventStorage;
     }
 
     @Override
@@ -42,15 +46,17 @@ public class FilmServiceDb implements FilmService {
     @Override
     public void putLike(int filmId, int userId) {
         filmStorage.putLike(filmId, userId);
+        eventStorage.addEvent(filmId, userId, "LIKE", "ADD");
     }
 
     @Override
     public void deleteLike(int filmId, int userId) {
         filmStorage.deleteLike(filmId, userId);
+        eventStorage.addEvent(filmId, userId, "LIKE", "REMOVE");
     }
 
     @Override
-    public List<Film> getPopularFilm(int count) {
-        return filmStorage.getPopularFilm(count);
+    public List<Film> getPopularFilm(int count, int genreId, int year) {
+        return filmStorage.getPopularFilm(count, genreId, year);
     }
 }

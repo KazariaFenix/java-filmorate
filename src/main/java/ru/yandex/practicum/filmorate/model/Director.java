@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class Director {
+public class Director { //режиссер
     private int id;
     private String name;
 }

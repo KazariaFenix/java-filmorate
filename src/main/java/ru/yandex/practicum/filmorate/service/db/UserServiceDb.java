@@ -3,9 +3,11 @@ package ru.yandex.practicum.filmorate.service.db;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.db.EventDbStorage;
 
 import java.util.*;
 
@@ -13,10 +15,12 @@ import java.util.*;
 @Primary
 public class UserServiceDb implements UserService {
     private final UserStorage userStorage;
+    private final EventDbStorage eventStorage;
 
     @Autowired
-    public UserServiceDb(UserStorage userStorage) {
+    public UserServiceDb(UserStorage userStorage, EventDbStorage eventStorage) {
         this.userStorage = userStorage;
+        this.eventStorage = eventStorage;
     }
 
     @Override
@@ -47,15 +51,22 @@ public class UserServiceDb implements UserService {
     @Override
     public void putFriend(int userId, int friendId) {
         userStorage.putFriend(userId, friendId);
+        eventStorage.addEvent(friendId, userId, "FRIEND", "ADD");
     }
 
     @Override
     public void deleteFriend(int userId, int friendId) {
         userStorage.deleteFriend(userId, friendId);
+        eventStorage.addEvent(friendId, userId, "FRIEND", "ADD");
     }
 
     @Override
     public List<User> getMutualFriends(int userId, int otherId) {
         return userStorage.getMutualFriends(userId, otherId);
+    }
+
+    @Override
+    public List<Event> getUserFeeds(int userId) {
+        return eventStorage.getAllEventByUserId(userId);
     }
 }
