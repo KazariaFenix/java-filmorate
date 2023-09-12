@@ -134,6 +134,12 @@ public class FilmDbStorage implements FilmStorage {
                 count);
     }
 
+    public void deleteFilm(int id) {
+        validationFilm(id);
+        String sqlUserLike = "DELETE FROM FILMS WHERE film_id = ?";
+        jdbcTemplate.update(sqlUserLike, id);
+    }
+
     private FilmGenre makeGenre(ResultSet rs) throws SQLException {
         return genre.getGenreById(rs.getInt("genre_id"));
     }
