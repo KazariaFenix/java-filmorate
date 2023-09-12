@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import javax.validation.ValidationException;
 import java.util.List;
 
 @Component
@@ -24,14 +23,11 @@ public class ReviewStorageDb implements ReviewStorage {
 
     @Override
     public Review createReview(Review review) {
-        if (review.getUserId() < 0 || review.getFilmId() < 0) {
-            throw new NoSuchElementException("Проверьте id фильма или id пользователя");
-        }
         try {
             filmStorage.findFilmById(review.getFilmId());
             userStorage.findUserById(review.getUserId());
         } catch (NoSuchElementException e) {
-            throw new ValidationException(e.getMessage());
+            throw new java.util.NoSuchElementException(e.getMessage());
         }
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reviews")
@@ -102,10 +98,8 @@ public class ReviewStorageDb implements ReviewStorage {
 
             return getReviewById(review.getReviewId());
         } else {
-            throw new ValidationException("Проверьте id отзыва");
+            throw new java.util.NoSuchElementException("Проверьте id отзыва");
         }
-
-
     }
 
     @Override
@@ -114,7 +108,7 @@ public class ReviewStorageDb implements ReviewStorage {
             jdbcTemplate.update("DELETE FROM reviews\n" +
                     "WHERE review_id = ?", reviewId);
         } else {
-            throw new ValidationException("Проверьте id отзыва");
+            throw new java.util.NoSuchElementException("Проверьте id отзыва");
         }
 
     }
@@ -124,10 +118,10 @@ public class ReviewStorageDb implements ReviewStorage {
         try {
             userStorage.findUserById(userId);
         } catch (NoSuchElementException e) {
-            throw new ValidationException(e.getMessage());
+            throw new java.util.NoSuchElementException("проверьте id пользователя");
         }
         if (!validationReview(reviewId)) {
-            throw new ValidationException("Проверьте id отзыва");
+            throw new java.util.NoSuchElementException("Проверьте id отзыва");
         } else {
             jdbcTemplate.update("INSERT INTO reviews_users (user_id,review_id)\n" +
                     "VALUES (?,?)", userId, reviewId);
@@ -144,10 +138,10 @@ public class ReviewStorageDb implements ReviewStorage {
         try {
             userStorage.findUserById(userId);
         } catch (NoSuchElementException e) {
-            throw new ValidationException(e.getMessage());
+            throw new java.util.NoSuchElementException("неверный id");
         }
         if (!validationReview(reviewId)) {
-            throw new ValidationException("Проверьте id отзыва");
+            throw new java.util.NoSuchElementException("Проверьте id отзыва");
         } else {
             jdbcTemplate.update("INSERT INTO reviews_users (user_id,review_id)\n" +
                     "VALUES (?,?)", userId, reviewId);
@@ -164,10 +158,10 @@ public class ReviewStorageDb implements ReviewStorage {
         try {
             userStorage.findUserById(userId);
         } catch (NoSuchElementException e) {
-            throw new ValidationException(e.getMessage());
+            throw new java.util.NoSuchElementException(e.getMessage());
         }
         if (!validationReview(reviewId)) {
-            throw new ValidationException("Проверьте id отзыва");
+            throw new java.util.NoSuchElementException("Проверьте id отзыва");
         } else {
             int del = jdbcTemplate.update("DELETE FROM reviews_users\n" +
                     "WHERE review_id = ? AND user_id = ?", reviewId, userId);
@@ -185,10 +179,10 @@ public class ReviewStorageDb implements ReviewStorage {
         try {
             userStorage.findUserById(userId);
         } catch (NoSuchElementException e) {
-            throw new ValidationException(e.getMessage());
+            throw new java.util.NoSuchElementException(e.getMessage());
         }
         if (!validationReview(reviewId)) {
-            throw new ValidationException("Проверьте id отзыва");
+            throw new java.util.NoSuchElementException("Проверьте id отзыва");
         } else {
             int del = jdbcTemplate.update("DELETE FROM reviews_users\n" +
                     "WHERE review_id = ? AND user_id = ?", reviewId, userId);

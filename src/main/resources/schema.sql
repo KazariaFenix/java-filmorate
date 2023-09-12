@@ -44,6 +44,8 @@ is_positive boolean,
 useful integer,
 film_id int REFERENCES films (film_id) ON DELETE CASCADE,
 user_id int REFERENCES users (id) ON DELETE CASCADE
+CONSTRAINT constr_user CHECK(user_id > 0)
+CONSTRAINT constr_film CHECK(film_id > 0)
 );
 
 CREATE TABLE IF NOT EXISTS reviews_users(
