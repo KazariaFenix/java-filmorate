@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.db;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,10 +12,12 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.Director;
 
+import javax.validation.ValidationException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -27,6 +30,7 @@ public class DirectorDbStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    // main methods
     public Director addDirector(Director director) {
         String sqlQuery = "INSERT INTO directors(name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -77,8 +81,40 @@ public class DirectorDbStorage {
         int status = jdbcTemplate.update(sqlQuery, id);
         return status != 0;
     }
+
+    // service methods for directors - films link table
+    public void setFilmsDirectors(Collection<Director> directors, int filmId) {
+        if (directors == null || directors.size() == 0 || directors.isEmpty()) return;
+        String query = "INSERT INTO films_directors(film_id, director_id) VALUES(?,?)";
+        for (Director director : directors) {
+            try {
+                director = jdbcTemplate.queryForObject("SELECT * FROM directors WHERE director_id = ?",
+                        new DirectorMapper(), director.getId());
+                jdbcTemplate.update(query, filmId, director.getId());
+            } catch (DataIntegrityViolationException | NullPointerException ex) {
+                throw new RuntimeException(String.format("Couldn't update directors list for film id=%s", filmId));
+            }
+        }
+    }
+
+    public Collection<Director> getFilmDirectorsSet(int filmId) {
+        String query =
+                "SELECT d.* " +
+                "FROM films_directors fd " +
+                "JOIN directors d on d.director_id = fd.director_id " +
+                "WHERE film_id = ?";
+        return jdbcTemplate.query(query, new DirectorMapper(), filmId);
+    }
+
+    public void deleteFilmDirectors(Integer filmId) {
+        String query = "delete from film_directors " +
+                "where film_id = ?";
+        jdbcTemplate.update(query, filmId);
+    }
+
 }
 
+// service class
 class DirectorMapper implements RowMapper<Director> {
     @Override
     public Director mapRow(ResultSet rs, int rowNum) throws SQLException {

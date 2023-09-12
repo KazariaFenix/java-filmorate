@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -22,12 +23,14 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final GenreDbStorage genre;
     private final MPAStorage mpa;
+    private final DirectorDbStorage directorStorage;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genre, MPAStorage mpa) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genre, MPAStorage mpa, DirectorDbStorage ds) {
         this.jdbcTemplate = jdbcTemplate;
         this.genre = genre;
         this.mpa = mpa;
+        this.directorStorage = ds;
     }
 
     @Override
@@ -47,6 +50,7 @@ public class FilmDbStorage implements FilmStorage {
         if (film.getGenres() != null) {
             addFilmGenres(film, key);
         }
+        film = addFilmDirectors(film, key);
         return findFilmById(key);
     }
 
@@ -159,6 +163,12 @@ public class FilmDbStorage implements FilmStorage {
             String sqlFilmGenres = "MERGE INTO films_genre (film_id, genre_id) VALUES (?, ?)";
             jdbcTemplate.update(sqlFilmGenres, key, genre.getId());
         }
+    }
+
+    private Film addFilmDirectors(Film film, int filmId) {
+        directorStorage.setFilmsDirectors(film.getDirector(), filmId);
+        Collection<Director> directors = directorStorage.getFilmDirectorsSet(filmId);
+        return film.toBuilder().director(directors).build();
     }
 
     private boolean validationUserLike(int filmId, int userId) {

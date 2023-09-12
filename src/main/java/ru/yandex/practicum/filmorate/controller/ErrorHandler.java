@@ -23,9 +23,12 @@ public class ErrorHandler {
     public ErrorResponse handlerNoSuch(final NoSuchElementException e) {
         return new ErrorResponse("Элемент " + e.getParam() + " не найден");
     }
+    /*
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handlerThrowable(final Throwable e) {
         return new ErrorResponse("Возникло исключение: " + e.getMessage());
     }
+
+     */
 }
