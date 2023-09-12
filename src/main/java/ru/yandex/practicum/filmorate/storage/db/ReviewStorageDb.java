@@ -197,7 +197,6 @@ public class ReviewStorageDb implements ReviewStorage {
                         "SET useful = useful + 1\n" +
                         "where review_id = ?", reviewId);
             }
-
         }
     }
 
