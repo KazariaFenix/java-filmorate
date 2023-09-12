@@ -6,19 +6,20 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.db.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.db.EventDbStorage;
+import ru.yandex.practicum.filmorate.storage.db.FilmDbStorage;
 
 import java.util.List;
 
 @Service
 @Primary
 public class FilmServiceDb implements FilmService {
-    private final FilmStorage filmStorage;
     private final EventDbStorage eventStorage;
+    private final FilmDbStorage filmStorage;
 
     @Autowired
-    public FilmServiceDb(FilmStorage filmStorage, EventDbStorage eventStorage) {
+    public FilmServiceDb(FilmDbStorage filmStorage, EventDbStorage eventStorage) {
         this.filmStorage = filmStorage;
         this.eventStorage = eventStorage;
     }
@@ -58,5 +59,10 @@ public class FilmServiceDb implements FilmService {
     @Override
     public List<Film> getPopularFilm(int count, int genreId, int year) {
         return filmStorage.getPopularFilm(count, genreId, year);
+    }
+
+
+    public void deleteFilm(int id) {
+        filmStorage.deleteFilm(id);
     }
 }

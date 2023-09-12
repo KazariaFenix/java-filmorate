@@ -127,32 +127,22 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopularFilm(int count, int genreId, int year) {
-        if (genreId == 0 && year == 0) {
-            String sqlQuery = "SELECT * FROM films ORDER BY rate DESC LIMIT ?";
+    public List<Film> getPopularFilm(int count) {
+        String sqlQuery = "select *\n" +
+                "from FILMS  F LEFT JOIN  users_like L on F.FILM_ID  = L.FILM_ID\n " +
+                "GROUP BY F.FILM_ID, L.USER_ID ORDER BY COUNT(L.USER_ID) DESC LIMIT ?";
+        List<Film> list = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
+                count);
+        Set<Film> filmSet = new HashSet<>(list);
+        list.clear();
+        list.addAll(filmSet);
+        return list;
+    }
 
-            return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
-                    count);
-        }
-        if (genreId == 0) {
-            String sqlQuery = "SELECT * FROM films WHERE EXTRACT (YEAR FROM CAST(release_date AS date)) = ?" +
-                    " ORDER BY rate DESC LIMIT ?";
-
-            return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
-                    year, count);
-        }
-        if (year == 0) {
-            String sqlQuery = "SELECT * FROM films WHERE " +
-                    "film_id IN (SELECT film_id FROM films_genre WHERE genre_id = ?) ORDER BY rate DESC LIMIT ?";
-
-            return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
-                    genreId, count);
-        }
-        String sqlQuery = "SELECT * FROM films WHERE EXTRACT (YEAR FROM CAST(release_date AS date)) = ? AND " +
-                "film_id IN (SELECT film_id FROM films_genre WHERE genre_id = ?) ORDER BY rate DESC LIMIT ?";
-
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
-                year, genreId, count);
+    public void deleteFilm(int id) {
+        validationFilm(id);
+        String sqlUserLike = "DELETE FROM FILMS WHERE film_id = ?";
+        jdbcTemplate.update(sqlUserLike, id);
     }
 
     private FilmGenre makeGenre(ResultSet rs) throws SQLException {

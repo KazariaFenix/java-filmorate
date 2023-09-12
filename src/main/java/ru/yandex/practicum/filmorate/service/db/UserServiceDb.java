@@ -65,6 +65,10 @@ public class UserServiceDb implements UserService {
         return userStorage.getMutualFriends(userId, otherId);
     }
 
+    public void deleteUser(int id) {
+        userStorage.deleteUser(id);
+    }
+
     @Override
     public List<Event> getUserFeeds(int userId) {
         return eventStorage.getAllEventByUserId(userId);

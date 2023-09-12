@@ -54,4 +54,10 @@ public class FilmController {
                                  @RequestParam(defaultValue = "0") int genreId) {
         return service.getPopularFilm(count, genreId, year);
     }
+
+    @DeleteMapping(value = "/{id}")
+    public void deleteFilm(@Valid @PathVariable int id) {
+        service.deleteFilm(id);
+
+    }
 }
