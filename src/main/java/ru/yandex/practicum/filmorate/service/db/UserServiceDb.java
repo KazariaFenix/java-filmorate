@@ -5,17 +5,17 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.db.UserDbStorage;
 
 import java.util.*;
 
 @Service
 @Primary
 public class UserServiceDb implements UserService {
-    private final UserStorage userStorage;
+    private final UserDbStorage userStorage;
 
     @Autowired
-    public UserServiceDb(UserStorage userStorage) {
+    public UserServiceDb(UserDbStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -57,5 +57,9 @@ public class UserServiceDb implements UserService {
     @Override
     public List<User> getMutualFriends(int userId, int otherId) {
         return userStorage.getMutualFriends(userId, otherId);
+    }
+
+    public void deleteUser(int id) {
+        userStorage.deleteUser(id);
     }
 }
