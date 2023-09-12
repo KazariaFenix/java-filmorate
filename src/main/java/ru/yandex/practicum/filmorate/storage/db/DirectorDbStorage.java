@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.Director;
 
@@ -16,6 +17,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 @Slf4j
+@Component
 public class DirectorDbStorage {
 
     private final JdbcTemplate jdbcTemplate;
