@@ -9,12 +9,15 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.MPAStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Repository
 @Primary
@@ -113,6 +116,59 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(sqlRate, (film.getRate() + 1), filmId);
     }
 
+    //-----------------------------------------------------------------------------------------------
+    @Override
+    public List<Film> getRecommendedFilms(int userId) {
+        List<Film> userFilms = getUserFilms(userId);
+
+        List<Integer> userFilmIds = userFilms.stream()
+                .map(Film::getId)
+                .collect(Collectors.toList());
+
+        List<User> users = getUserList(userId);
+        List<Film> targetFilms = new ArrayList<>();
+        int targetAmount = 0;
+        int currentAmount = 0;
+
+        List<List<Film>> collect = users.stream()
+                .map(user -> getUserFilms((int) user.getId()))
+                .collect(Collectors.toList());
+
+        for (List<Film> films : collect) {
+            if (films == null || films.isEmpty()){
+                continue;
+            }
+            for (Film film : films) {
+                if (userFilmIds.contains(film.getId())){
+                    currentAmount++;
+                }
+            }
+            if (currentAmount > targetAmount){
+                targetFilms = films;
+                targetAmount = currentAmount;
+            }
+            currentAmount = 0;
+        }
+
+        if (targetFilms.isEmpty()){
+            return targetFilms;
+        }
+
+        return targetFilms.stream()
+                .filter(film -> !userFilmIds.contains(film.getId()))
+                .collect(Collectors.toList());
+
+    }
+
+    private List<Film> getUserFilms(int userId) {
+        String sqlQuery = "SELECT film_id FROM films WHERE film_id IN " +
+                "(SELECT film_id FROM users_like WHERE user_id = ?) ORDER BY film_id";
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")), userId);
+    }
+
+    //------------------------------------------------------------------------------------------------
+
     @Override
     public void deleteLike(int filmId, int userId) {
         if (!validationUserLike(filmId, userId)) {
@@ -175,5 +231,30 @@ public class FilmDbStorage implements FilmStorage {
         if (!film.next()) {
             throw new NoSuchElementException("Фильма с таким идентификатором не существует");
         }
+    }
+
+    public User findUserById(long userId) {
+        User user;
+        String sqlQuery = "SELECT * FROM users WHERE id = ?";
+        SqlRowSet userRow = jdbcTemplate.queryForRowSet(sqlQuery, userId);
+
+        if (userRow.next()) {
+            user = User.builder().id(userRow.getLong("id"))
+                    .email(userRow.getString("email"))
+                    .name(userRow.getString("name"))
+                    .login(userRow.getString("login"))
+                    .birthday(userRow.getDate("birthday").toLocalDate())
+                    .build();
+        } else {
+            throw new NoSuchElementException("Пользователь не найден");
+        }
+
+        return user;
+    }
+
+    public List<User> getUserList(int userId) {
+        String sqlQuery = "SELECT * FROM users where id not in (?)";
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findUserById(rs.getLong("id")), userId);
     }
 }
