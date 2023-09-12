@@ -25,7 +25,7 @@ public class ReviewStorageDb implements ReviewStorage {
     @Override
     public Review createReview(Review review) {
         if (review.getUserId() < 0 || review.getFilmId() < 0) {
-            throw new ValidationException();
+            throw new NoSuchElementException("Проверьте id фильма или id пользователя");
         }
         try {
             filmStorage.findFilmById(review.getFilmId());
