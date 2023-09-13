@@ -1,18 +1,3 @@
-drop table MPA cascade;
-drop table GENRE cascade;
-drop table FILMS cascade;
-drop table USERS cascade;
-drop table DIRECTORS cascade;
-
-drop table FILMS_DIRECTORS  ;
-drop table FILMS_GENRE ;
-drop table REVIEWS_USERS ;
-drop table REVIEWS ;
-drop table USERS_LIKE ;
-drop table USER_FRIENDS ;
-
-
-
 CREATE TABLE IF NOT EXISTS mpa(
 mpa_id integer PRIMARY KEY,
 title varchar(5)
