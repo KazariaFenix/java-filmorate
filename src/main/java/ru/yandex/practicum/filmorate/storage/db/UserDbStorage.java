@@ -129,6 +129,13 @@ public class UserDbStorage implements UserStorage {
         return new ArrayList<>(mutualFriends);
     }
 
+
+    public void deleteUser(int id) {
+        validationIdUser(id);
+        String sqlUserLike = "DELETE FROM USERS WHERE id = ?";
+        jdbcTemplate.update(sqlUserLike, id);
+    }
+
     private void validationIdUser(long userId) {
         SqlRowSet sqlUser = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE id = ?", userId);
 

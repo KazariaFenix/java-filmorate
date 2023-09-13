@@ -7,18 +7,18 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.db.UserDbStorage;
 
 import java.util.*;
 
 @Service
 @Primary
 public class UserServiceDb implements UserService {
-    private final UserStorage userStorage;
+    private final UserDbStorage userStorage;
     private final FilmStorage filmStorage;
 
     @Autowired
-    public UserServiceDb(UserStorage userStorage, FilmStorage filmStorage) {
+    public UserServiceDb(UserDbStorage userStorage, FilmStorage filmStorage) {
         this.userStorage = userStorage;
         this.filmStorage = filmStorage;
     }
@@ -61,6 +61,10 @@ public class UserServiceDb implements UserService {
     @Override
     public List<User> getMutualFriends(int userId, int otherId) {
         return userStorage.getMutualFriends(userId, otherId);
+    }
+
+    public void deleteUser(int id) {
+        userStorage.deleteUser(id);
     }
 
     public List<Film> getRecommendedFilms(int userId) {

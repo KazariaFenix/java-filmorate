@@ -76,8 +76,8 @@ CONSTRAINT film_user PRIMARY KEY(film_id, user_id)
 CREATE TABLE IF NOT EXISTS user_friends(
 user_id integer,
 friend_id integer,
-CONSTRAINT user_example_to_users FOREIGN KEY (user_id) REFERENCES users,
-CONSTRAINT friend_example_to_users FOREIGN KEY (friend_id) REFERENCES users,
+CONSTRAINT user_example_to_users FOREIGN KEY (user_id) REFERENCES users ON DELETE CASCADE,
+CONSTRAINT friend_example_to_users FOREIGN KEY (friend_id) REFERENCES users ON DELETE CASCADE,
 PRIMARY KEY (user_id, friend_id)
 );
 
@@ -87,7 +87,7 @@ name varchar(64) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS films_genre(
-film_id integer REFERENCES films(film_id),
-genre_id integer REFERENCES genre(genre_id),
+film_id integer REFERENCES films(film_id)  ON DELETE CASCADE,
+genre_id integer REFERENCES genre(genre_id)  ON DELETE CASCADE,
 PRIMARY KEY(film_id, genre_id)
 );

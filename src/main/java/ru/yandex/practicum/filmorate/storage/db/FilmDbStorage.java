@@ -193,10 +193,21 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getPopularFilm(int count) {
-        String sqlQuery = "SELECT * FROM films ORDER BY rate DESC LIMIT ?;";
-
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
+        String sqlQuery = "select *\n" +
+                "from FILMS  F LEFT JOIN  users_like L on F.FILM_ID  = L.FILM_ID\n " +
+                "GROUP BY F.FILM_ID, L.USER_ID ORDER BY COUNT(L.USER_ID) DESC LIMIT ?";
+        List<Film> list = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
                 count);
+        Set<Film> filmSet = new HashSet<>(list);
+        list.clear();
+        list.addAll(filmSet);
+        return list;
+    }
+
+    public void deleteFilm(int id) {
+        validationFilm(id);
+        String sqlUserLike = "DELETE FROM FILMS WHERE film_id = ?";
+        jdbcTemplate.update(sqlUserLike, id);
     }
 
     private FilmGenre makeGenre(ResultSet rs) throws SQLException {

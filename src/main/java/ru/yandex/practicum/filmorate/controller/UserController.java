@@ -59,6 +59,11 @@ public class UserController {
         return service.getMutualFriends(id, otherId);
     }
 
+    @DeleteMapping(value = "/{id}")
+    public void deleteUser(@Valid @PathVariable int id) {
+        service.deleteUser(id);
+    }
+
     @GetMapping("/{id}/recommendations")
     public List<Film> getRecommendedFilms(@PathVariable int id){
         return service.getRecommendedFilms(id);
