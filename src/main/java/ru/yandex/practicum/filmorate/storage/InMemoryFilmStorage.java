@@ -63,6 +63,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Collection<Film> filmsByDirectorSorted(int directorId, String sortBy) {
+        return null;
+    }
+
+    @Override
     public void deleteLike(int filmId, int userId) {
         Film film = findFilmById(filmId);
 

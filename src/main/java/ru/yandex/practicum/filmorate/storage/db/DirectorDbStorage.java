@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,7 +20,7 @@ import java.util.Collection;
 
 @Slf4j
 @Component
-public class DirectorDbStorage {
+public class DirectorDbStorage implements DirectorStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -29,6 +30,7 @@ public class DirectorDbStorage {
     }
 
     // main methods
+    @Override
     public Director addDirector(Director director) {
         String sqlQuery = "INSERT INTO directors(name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -42,6 +44,7 @@ public class DirectorDbStorage {
         return director;
     }
 
+    @Override
     public Director editDirector (Director director) {
         String query = "UPDATE directors SET name = ? WHERE director_id = ?";
         int countLines = jdbcTemplate.update(query,
@@ -56,6 +59,7 @@ public class DirectorDbStorage {
         return director;
     }
 
+    @Override
     public Director getDirectorById (int id) {
         Director director;
         try {
@@ -68,11 +72,13 @@ public class DirectorDbStorage {
         }
     }
 
+    @Override
     public Collection<Director> getAllDirectors() {
         Collection<Director> directors = jdbcTemplate.query("SELECT * FROM directors", new DirectorMapper());
         return directors;
     }
 
+    @Override
     public boolean killDirectorById (int id) {
         String sqlQuery = "delete from directors " +
                 "where director_id = ?";
@@ -81,6 +87,7 @@ public class DirectorDbStorage {
     }
 
     // service methods for directors - films link table
+    @Override
     public void setFilmsDirectors(Collection<Director> directors, int filmId) {
         if (directors == null || directors.size() == 0 || directors.isEmpty()) return;
         String query = "INSERT INTO films_directors(film_id, director_id) VALUES(?,?)";
@@ -95,6 +102,7 @@ public class DirectorDbStorage {
         }
     }
 
+    @Override
     public Collection<Director> getFilmDirectorsSet(int filmId) {
         String query =
                 "SELECT d.* " +
@@ -104,6 +112,7 @@ public class DirectorDbStorage {
         return jdbcTemplate.query(query, new DirectorMapper(), filmId);
     }
 
+    @Override
     public void deleteFilmDirectors(int filmId) {
         String query = "delete from films_directors " +
                 "where film_id = ?";

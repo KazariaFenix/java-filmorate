@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -52,5 +53,9 @@ public class FilmServiceDb implements FilmService {
     @Override
     public List<Film> getPopularFilm(int count) {
         return filmStorage.getPopularFilm(count);
+    }
+
+    public Collection<Film> getFilmsDirectors(int directorId, String sortType) {
+        return filmStorage.filmsByDirectorSorted(directorId, sortType);
     }
 }

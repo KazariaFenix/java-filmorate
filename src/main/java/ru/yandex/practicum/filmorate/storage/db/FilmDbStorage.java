@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.MPAStorage;
 
+import javax.validation.ValidationException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -192,5 +193,37 @@ public class FilmDbStorage implements FilmStorage {
         if (!film.next()) {
             throw new NoSuchElementException("Фильма с таким идентификатором не существует");
         }
+    }
+
+    @Override
+    public Collection<Film> filmsByDirectorSorted(int directorId, String sortBy) {
+        directorStorage.getDirectorById(directorId); // for checking up if director exists
+        SqlRowSet sql;
+        switch (sortBy) {
+            case "year":
+                sql = jdbcTemplate.queryForRowSet("SELECT f.*" +
+                        "FROM films_directors AS fd " +
+                        "JOIN FILMS AS f ON fd.film_id = f.film_id " +
+                        "WHERE director_id = ? " +
+                        "GROUP BY f.film_id, f.release_date " +
+                        "ORDER BY f.release_date", directorId);
+                break;
+
+            case "likes":
+                sql = jdbcTemplate.queryForRowSet("SELECT f.* " +
+                        "FROM films_directors as fd " +
+                        "JOIN films AS f ON fd.film_id = f.film_id " +
+                        "LEFT JOIN users_like AS ul ON f.film_id = ul.film_id " +
+                        "WHERE director_id = ? " +
+                        "GROUP BY f.film_id, ul.film_id IN (SELECT film_id FROM users_like) " +
+                        "ORDER BY COUNT(ul.film_id) DESC", directorId);
+                break;
+            default: throw new ValidationException("Wrong 'sortBy' method");
+        }
+        Collection<Film> result = new ArrayList<>();
+        while (sql.next()) {
+            result.add(findFilmById(sql.getInt("film_id")));
+        }
+        return result;
     }
 }
