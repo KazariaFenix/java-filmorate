@@ -13,13 +13,13 @@ public interface FilmStorage {
 
     Film findFilmById(int filmId);
 
-    List<Film> getPopularFilm(int count, int genreId, int year);
+    List<Film> getPopularFilm(int count);
 
     void deleteLike(int filmId, int userId);
 
     void putLike(int filmId, int userId);
 
-    void deleteFilm(int id);
+    List<Film> getCommonFilms(int userId, int friendId);
 
     List<Film> getRecommendedFilms(int userId);
 }
