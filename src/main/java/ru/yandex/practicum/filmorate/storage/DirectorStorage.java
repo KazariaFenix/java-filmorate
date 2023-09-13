@@ -8,13 +8,13 @@ public interface DirectorStorage {
 
     public Director addDirector(Director director);
 
-    public Director editDirector (Director director);
+    public Director editDirector(Director director);
 
-    public Director getDirectorById (int id);
+    public Director getDirectorById(int id);
 
     public Collection<Director> getAllDirectors();
 
-    public boolean killDirectorById (int id);
+    public boolean killDirectorById(int id);
 
     public void setFilmsDirectors(Collection<Director> directors, int filmId);
 

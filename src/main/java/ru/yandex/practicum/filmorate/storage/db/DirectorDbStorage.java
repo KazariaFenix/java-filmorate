@@ -45,7 +45,7 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public Director editDirector (Director director) {
+    public Director editDirector(Director director) {
         String query = "UPDATE directors SET name = ? WHERE director_id = ?";
         int countLines = jdbcTemplate.update(query,
                 director.getName(),
@@ -60,7 +60,7 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public Director getDirectorById (int id) {
+    public Director getDirectorById(int id) {
         Director director;
         try {
             director = jdbcTemplate.queryForObject(
@@ -79,7 +79,7 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public boolean killDirectorById (int id) {
+    public boolean killDirectorById(int id) {
         String sqlQuery = "delete from directors " +
                 "where director_id = ?";
         int status = jdbcTemplate.update(sqlQuery, id);
@@ -106,9 +106,9 @@ public class DirectorDbStorage implements DirectorStorage {
     public Collection<Director> getFilmDirectorsSet(int filmId) {
         String query =
                 "SELECT d.* " +
-                "FROM films_directors fd " +
-                "JOIN directors d on d.director_id = fd.director_id " +
-                "WHERE film_id = ?";
+                        "FROM films_directors fd " +
+                        "JOIN directors d on d.director_id = fd.director_id " +
+                        "WHERE film_id = ?";
         return jdbcTemplate.query(query, new DirectorMapper(), filmId);
     }
 
