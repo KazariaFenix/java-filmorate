@@ -14,11 +14,18 @@ public interface FilmStorage {
 
     Film findFilmById(int filmId);
 
-    List<Film> getPopularFilm(int count);
+    List<Film> getPopularFilm(int count, int genreId, int year);
 
     void deleteLike(int filmId, int userId);
 
     void putLike(int filmId, int userId);
 
     public Collection<Film> filmsByDirectorSorted(int directorId, String sortBy);
+
+    List<Film> getCommonFilms(int userId, int friendId);
+
+    List<Film> getRecommendedFilms(int userId);
+
+    void deleteFilm(int id);
+
 }

@@ -13,7 +13,7 @@ public interface FilmService {
 
     Film findFilmById(int filmId);
 
-    List<Film> getPopularFilm(int count);
+    List<Film> getPopularFilm(int count, int genreId, int year);
 
     void deleteLike(int filmId, int userId);
 

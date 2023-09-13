@@ -7,33 +7,29 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
-import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.FilmGenre;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.MPAStorage;
+
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.*;
+
 
 import javax.validation.ValidationException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
+
 
 @Repository
 @Primary
+@RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final GenreDbStorage genre;
 
     private final MPAStorage mpa;
     private final DirectorDbStorage directorStorage;
-
-    @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genre, MPAStorage mpa, DirectorDbStorage ds) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.genre = genre;
-        this.mpa = mpa;
-        this.directorStorage = ds;
-    }
+    private final UserStorage userDbStorage;
+    private final EventStorage eventStorage;
 
     @Override
     public List<Film> getFilmList() {
@@ -126,6 +122,75 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getRecommendedFilms(int userId) {
+
+        List<Integer> userFilmIds = getUserFilmIds(userId);
+        List<User> otherUsers = getOtherUserList(userId);
+
+        List<List<Film>> collect = otherUsers.stream()
+                .map(user -> getUserFilms((int) user.getId()))
+                .collect(Collectors.toList());
+
+        List<Film> targetFilms = new ArrayList<>();
+        int targetAmount = 0;
+        int currentAmount = 0;
+
+        for (List<Film> films : collect) {
+            if (films == null || films.isEmpty()) {
+                continue;
+            }
+            for (Film film : films) {
+                if (userFilmIds.contains(film.getId())) {
+                    currentAmount++;
+                }
+            }
+            if (currentAmount > targetAmount) {
+                targetFilms = films;
+                targetAmount = currentAmount;
+            }
+            currentAmount = 0;
+        }
+
+        if (targetFilms.isEmpty()) {
+            return targetFilms;
+        }
+
+        return targetFilms.stream()
+                .filter(film -> !userFilmIds.contains(film.getId()))
+                .collect(Collectors.toList());
+    }
+
+    private List<Integer> getUserFilmIds(int userId) {
+        String sqlQuery = "SELECT film_id FROM users_like WHERE user_id = ?";
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNUm) -> rs.getInt("film_id"), userId);
+    }
+
+    private List<Film> getUserFilms(int userId) {
+        String sqlQuery = "SELECT film_id FROM users_like WHERE user_id = ?";
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")), userId);
+    }
+
+    private List<User> getOtherUserList(int userId) {
+        String sqlQuery = "SELECT * FROM users where id not in (?)";
+
+        return jdbcTemplate.query(sqlQuery,
+                (rs, rowNum) -> userDbStorage.findUserById(rs.getLong("id")),
+                userId);
+    }
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        String sqlQuery = "SELECT users_like.film_id FROM users_like JOIN films ON films.film_id = users_like.film_id " +
+                "WHERE users_like.user_id = ? AND " +
+                "users_like.film_id IN (SELECT film_id FROM users_like WHERE user_id = ?) " +
+                "ORDER BY films.rate DESC";
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")), userId, friendId);
+    }
+
+    @Override
     public void deleteLike(int filmId, int userId) {
         if (!validationUserLike(filmId, userId)) {
             throw new NoSuchElementException("Данный пользователь не ставил лайк этому фильму");
@@ -139,11 +204,23 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopularFilm(int count) {
-        String sqlQuery = "SELECT * FROM films ORDER BY rate DESC LIMIT ?;";
-
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
+    public List<Film> getPopularFilm(int count, int genreId, int year) {
+        String sqlQuery = "select *\n" +
+                "from FILMS  F LEFT JOIN  users_like L on F.FILM_ID  = L.FILM_ID\n " +
+                "GROUP BY F.FILM_ID, L.USER_ID ORDER BY COUNT(L.USER_ID) DESC LIMIT ?";
+        List<Film> list = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
                 count);
+        Set<Film> filmSet = new HashSet<>(list);
+        list.clear();
+        list.addAll(filmSet);
+        return list;
+    }
+
+    @Override
+    public void deleteFilm(int id) {
+        validationFilm(id);
+        String sqlUserLike = "DELETE FROM FILMS WHERE film_id = ?";
+        jdbcTemplate.update(sqlUserLike, id);
     }
 
     private FilmGenre makeGenre(ResultSet rs) throws SQLException {

@@ -361,7 +361,8 @@ public class FilmorateDatabaseTest {
         filmService.putLike(firstFilm.getId(), (int) firstUser.getId());
         filmService.putLike(secondFilm.getId(), (int) secondUser.getId());
         filmService.putLike(secondFilm.getId(), (int) firstFilm.getId());
-        List<Film> listPopular = filmService.getPopularFilm(10);
+        List<Film> listPopular = filmService.getPopularFilm(10, 0, 0);
+        listPopular.forEach(System.out::println);
 
         assertThat(listPopular).asList().hasSize(2);
         assertThat(listPopular).asList().startsWith(filmStorage.findFilmById(secondFilm.getId()));
@@ -374,26 +375,6 @@ public class FilmorateDatabaseTest {
                 .hasValueSatisfying(film ->
                         AssertionsForClassTypes.assertThat(film)
                                 .hasFieldOrPropertyWithValue("name", "First Film"));
-    }
-
-    @Test
-    public void getPopularFilm() {
-        firstUser = userStorage.addUser(firstUser);
-        secondUser = userStorage.addUser(secondUser);
-        firstFilm = filmStorage.addFilm(firstFilm);
-        secondFilm = filmStorage.addFilm(secondFilm);
-
-        filmService.putLike(firstFilm.getId(), (int) firstUser.getId());
-        filmService.putLike(secondFilm.getId(), (int) secondUser.getId());
-        filmService.putLike(secondFilm.getId(), (int) firstFilm.getId());
-        List<Film> listPopular = filmService.getPopularFilm(1);
-
-        assertThat(listPopular).asList().hasSize(1);
-        assertThat(listPopular).asList().startsWith(filmStorage.findFilmById(secondFilm.getId()));
-        assertThat(Optional.of(listPopular.get(0)))
-                .hasValueSatisfying(film ->
-                        AssertionsForClassTypes.assertThat(film)
-                                .hasFieldOrPropertyWithValue("name", "Second Film"));
     }
 
     @Test

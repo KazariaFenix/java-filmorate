@@ -27,8 +27,8 @@ public class Film {
     private final FilmMPA mpa;
     @Singular("oneLike")
     private final Set<Integer> userLike;
-    //@Singular
     private final Collection<Director> directors;
+
 
     public Map<String, Object> toMap() {
         Map<String, Object> user = new HashMap<>();

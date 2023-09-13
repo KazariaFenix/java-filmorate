@@ -73,7 +73,7 @@ public class UserDbStorage implements UserStorage {
                     .birthday(userRow.getDate("birthday").toLocalDate())
                     .build();
         } else {
-            throw new NoSuchElementException("Пользователь не найден");
+            throw new NoSuchElementException("userId");
         }
 
         return user;
@@ -129,11 +129,18 @@ public class UserDbStorage implements UserStorage {
         return new ArrayList<>(mutualFriends);
     }
 
+
+    public void deleteUser(int id) {
+        validationIdUser(id);
+        String sqlUserLike = "DELETE FROM USERS WHERE id = ?";
+        jdbcTemplate.update(sqlUserLike, id);
+    }
+
     private void validationIdUser(long userId) {
         SqlRowSet sqlUser = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE id = ?", userId);
 
         if (!sqlUser.next()) {
-            throw new NoSuchElementException("Пользователь с таким айди не найден");
+            throw new NoSuchElementException("userId");
         }
     }
 

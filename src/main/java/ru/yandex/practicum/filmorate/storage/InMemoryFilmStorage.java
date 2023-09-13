@@ -68,6 +68,16 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getRecommendedFilms(int userId) {
+        return null;
+    }
+
+    @Override
     public void deleteLike(int filmId, int userId) {
         Film film = findFilmById(filmId);
 
@@ -89,11 +99,16 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopularFilm(int count) {
+    public List<Film> getPopularFilm(int count, int genreId, int year) {
         return getFilmList().stream()
                 .sorted(Comparator.comparing(Film::getRate, Comparator.nullsLast(Comparator.reverseOrder())))
                 .limit(count)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteFilm(int id) {
+        id = 0;
     }
 
     private Film buildFilm(Film film) {

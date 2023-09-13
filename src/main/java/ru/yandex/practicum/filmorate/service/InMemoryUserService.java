@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
@@ -54,5 +55,15 @@ public class InMemoryUserService implements UserService {
     @Override
     public List<User> getMutualFriends(int userId, int otherId) {
         return storage.getMutualFriends(userId, otherId);
+    }
+
+    @Override
+    public List<Event> getUserFeeds(int userId) {
+        return null;
+    }
+
+    @Override
+    public void deleteUser(int id) {
+        id = 0;
     }
 }
