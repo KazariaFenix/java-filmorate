@@ -53,4 +53,8 @@ public class FilmServiceDb implements FilmService {
     public List<Film> getPopularFilm(int count) {
         return filmStorage.getPopularFilm(count);
     }
+
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return filmStorage.getCommonFilms(userId, friendId);
+    }
 }

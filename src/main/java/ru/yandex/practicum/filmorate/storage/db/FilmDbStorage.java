@@ -114,6 +114,16 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        String sqlQuery = "SELECT users_like.film_id FROM users_like JOIN films ON films.film_id = users_like.film_id " +
+                "WHERE users_like.user_id = ? AND " +
+                "users_like.film_id IN (SELECT film_id FROM users_like WHERE user_id = ?) " +
+                "ORDER BY films.rate DESC";
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")), userId, friendId);
+    }
+
+    @Override
     public void deleteLike(int filmId, int userId) {
         if (!validationUserLike(filmId, userId)) {
             throw new NoSuchElementException("Данный пользователь не ставил лайк этому фильму");
