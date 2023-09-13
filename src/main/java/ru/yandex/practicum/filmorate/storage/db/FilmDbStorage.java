@@ -164,8 +164,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private List<Film> getUserFilms(int userId) {
-        String sqlQuery = "SELECT film_id FROM films WHERE film_id IN " +
-                "(SELECT film_id FROM users_like WHERE user_id = ?) ORDER BY film_id";
+        String sqlQuery = "SELECT film_id FROM users_like WHERE user_id = ?";
 
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")), userId);
     }
