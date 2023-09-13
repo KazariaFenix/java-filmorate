@@ -42,8 +42,7 @@ public class DirectorDbService implements DirectorService {
         Director dir = valid(directorStorage.getDirectorById(id));
         if (directorStorage.deleteDirectorById(dir.getId())) {
             return true;
-        }
-        else {
+        } else {
             throw new NoSuchElementException(String.format(ERROR_MESSAGE, id));
         }
     }
@@ -51,8 +50,9 @@ public class DirectorDbService implements DirectorService {
     @Override
     public Director putDirector(Director director) {
         Director dir = directorStorage.editDirector(valid(director));
-        if (dir != null) return dir;
-        else {
+        if (dir != null) {
+            return dir;
+        } else {
             throw new NoSuchElementException(String.format(ERROR_MESSAGE, director.getId()));
         }
     }
