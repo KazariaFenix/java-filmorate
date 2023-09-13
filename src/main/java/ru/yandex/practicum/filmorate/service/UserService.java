@@ -23,4 +23,6 @@ public interface UserService {
     List<User> getMutualFriends(int userId, int otherId);
 
     List<Event> getUserFeeds(int userId);
+
+    void deleteUser(int id);
 }

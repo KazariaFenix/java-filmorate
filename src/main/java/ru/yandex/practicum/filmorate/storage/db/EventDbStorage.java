@@ -6,15 +6,18 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.EventStatus;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.storage.EventStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Repository
 @Primary
-public class EventDbStorage {
+public class EventDbStorage implements EventStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -22,31 +25,33 @@ public class EventDbStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void addEvent(int entityId, int userId, String eventType, String operation) {
+    @Override
+    public int addEvent(int entityId, int userId, EventType eventType, EventStatus operation) {
         Event event = Event.builder()
-                .eventType(eventType)
-                .operation(operation)
+                .eventType(eventType.name())
+                .operation(operation.name())
                 .entityId(entityId)
-                .timestamp(LocalDateTime.now())
+                .timestamp(Instant.now().toEpochMilli())
                 .userId(userId)
                 .build();
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("events")
                 .usingGeneratedKeyColumns("event_id");
-        int key = simpleJdbcInsert.executeAndReturnKey(event.toMap()).intValue();
+        return simpleJdbcInsert.executeAndReturnKey(event.toMap()).intValue();
     }
 
+    @Override
     public List<Event> getAllEventByUserId(int userId) {
         String sql = "SELECT * FROM events WHERE user_id = ?";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeEvent(rs), userId);
     }
 
-    public Event makeEvent(ResultSet rs) throws SQLException {
+    private Event makeEvent(ResultSet rs) throws SQLException {
         return Event.builder()
                 .eventId(rs.getInt("event_id"))
                 .userId(rs.getInt("user_id"))
-                .timestamp(rs.getTimestamp("time").toLocalDateTime())
+                .timestamp(rs.getLong("time"))
                 .entityId(rs.getInt("entity_id"))
                 .eventType(rs.getString("event_type"))
                 .operation(rs.getString("operation"))

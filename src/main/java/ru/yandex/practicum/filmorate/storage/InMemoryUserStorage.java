@@ -119,6 +119,11 @@ public class InMemoryUserStorage implements UserStorage {
         return mutualFriends;
     }
 
+    @Override
+    public void deleteUser(int id) {
+        id = 0;
+    }
+
     private User buildIdUser(User user) {
         idUser++;
         return user.toBuilder().id(idUser).friends(new ArrayList<>()).build();

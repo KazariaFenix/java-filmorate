@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +11,7 @@ import java.util.Map;
 public class Event {
     private final int eventId;
     private final int userId;
-    private final LocalDateTime timestamp;
+    private final long timestamp;
     private final String eventType;
     private final String operation;
     private final int entityId;

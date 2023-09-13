@@ -6,7 +6,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
+import ru.yandex.practicum.filmorate.model.EventStatus;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.storage.EventStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -21,6 +24,7 @@ public class ReviewStorageDb implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final EventStorage eventStorage;
 
     @Override
     public Review createReview(Review review) {
@@ -36,7 +40,9 @@ public class ReviewStorageDb implements ReviewStorage {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("reviews")
                 .usingGeneratedKeyColumns("review_id");
-        return getReviewById(simpleJdbcInsert.executeAndReturnKey(review.toMap()).intValue());
+        int key = simpleJdbcInsert.executeAndReturnKey(review.toMap()).intValue();
+        eventStorage.addEvent(key, review.getUserId(), EventType.REVIEW, EventStatus.ADD);
+        return getReviewById(key);
     }
 
     @Override
@@ -94,11 +100,10 @@ public class ReviewStorageDb implements ReviewStorage {
     @Override
     public Review updateReview(Review review) {
         if (validationReview(review.getReviewId())) {
-            jdbcTemplate.update("UPDATE reviews\n" +
-                            "SET content = ?, is_positive = ?\n" +
-                            "WHERE review_id = ?",
+            jdbcTemplate.update("UPDATE reviews SET content = ?, is_positive = ? WHERE review_id = ?",
                     review.getContent(),
                     review.getIsPositive(), review.getReviewId());
+            eventStorage.addEvent(review.getReviewId(), review.getUserId(), EventType.REVIEW, EventStatus.UPDATE);
 
             return getReviewById(review.getReviewId());
         } else {
@@ -111,8 +116,9 @@ public class ReviewStorageDb implements ReviewStorage {
     @Override
     public void deleteReviewById(int reviewId) {
         if (validationReview(reviewId)) {
-            jdbcTemplate.update("DELETE FROM reviews\n" +
-                    "WHERE review_id = ?", reviewId);
+            Review review = getReviewById(reviewId);
+            eventStorage.addEvent(reviewId, review.getUserId(), EventType.REVIEW, EventStatus.REMOVE);
+            jdbcTemplate.update("DELETE FROM reviews WHERE review_id = ?", reviewId);
         } else {
             throw new ValidationException("Проверьте id отзыва");
         }
@@ -129,12 +135,9 @@ public class ReviewStorageDb implements ReviewStorage {
         if (!validationReview(reviewId)) {
             throw new ValidationException("Проверьте id отзыва");
         } else {
-            jdbcTemplate.update("INSERT INTO reviews_users (user_id,review_id)\n" +
-                    "VALUES (?,?)", userId, reviewId);
+            jdbcTemplate.update("INSERT INTO reviews_users (user_id,review_id) VALUES (?,?)", userId, reviewId);
 
-            jdbcTemplate.update("UPDATE reviews\n" +
-                    "SET useful = useful + 1\n" +
-                    "WHERE review_id = ?", reviewId);
+            jdbcTemplate.update("UPDATE reviews SET useful = useful + 1 WHERE review_id = ?", reviewId);
         }
 
     }
@@ -149,12 +152,9 @@ public class ReviewStorageDb implements ReviewStorage {
         if (!validationReview(reviewId)) {
             throw new ValidationException("Проверьте id отзыва");
         } else {
-            jdbcTemplate.update("INSERT INTO reviews_users (user_id,review_id)\n" +
-                    "VALUES (?,?)", userId, reviewId);
+            jdbcTemplate.update("INSERT INTO reviews_users (user_id,review_id) VALUES (?,?)", userId, reviewId);
 
-            jdbcTemplate.update("UPDATE reviews\n" +
-                    "SET useful = useful - 1\n" +
-                    "WHERE review_id = ?", reviewId);
+            jdbcTemplate.update("UPDATE reviews SET useful = useful - 1 WHERE review_id = ?", reviewId);
         }
 
     }

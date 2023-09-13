@@ -61,4 +61,9 @@ public class InMemoryUserService implements UserService {
     public List<Event> getUserFeeds(int userId) {
         return null;
     }
+
+    @Override
+    public void deleteUser(int id) {
+        id = 0;
+    }
 }

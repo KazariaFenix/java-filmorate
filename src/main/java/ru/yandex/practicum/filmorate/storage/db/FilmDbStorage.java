@@ -127,7 +127,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopularFilm(int count) {
+    public List<Film> getPopularFilm(int count, int genreId, int year) {
         String sqlQuery = "select *\n" +
                 "from FILMS  F LEFT JOIN  users_like L on F.FILM_ID  = L.FILM_ID\n " +
                 "GROUP BY F.FILM_ID, L.USER_ID ORDER BY COUNT(L.USER_ID) DESC LIMIT ?";
@@ -139,6 +139,7 @@ public class FilmDbStorage implements FilmStorage {
         return list;
     }
 
+    @Override
     public void deleteFilm(int id) {
         validationFilm(id);
         String sqlUserLike = "DELETE FROM FILMS WHERE film_id = ?";

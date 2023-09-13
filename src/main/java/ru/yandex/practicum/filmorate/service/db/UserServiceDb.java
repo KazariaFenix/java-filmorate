@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.EventStatus;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -51,13 +53,13 @@ public class UserServiceDb implements UserService {
     @Override
     public void putFriend(int userId, int friendId) {
         userStorage.putFriend(userId, friendId);
-        eventStorage.addEvent(friendId, userId, "FRIEND", "ADD");
+        eventStorage.addEvent(friendId, userId, EventType.FRIEND, EventStatus.ADD);
     }
 
     @Override
     public void deleteFriend(int userId, int friendId) {
         userStorage.deleteFriend(userId, friendId);
-        eventStorage.addEvent(friendId, userId, "FRIEND", "ADD");
+        eventStorage.addEvent(friendId, userId, EventType.FRIEND, EventStatus.REMOVE);
     }
 
     @Override
@@ -65,6 +67,7 @@ public class UserServiceDb implements UserService {
         return userStorage.getMutualFriends(userId, otherId);
     }
 
+    @Override
     public void deleteUser(int id) {
         userStorage.deleteUser(id);
     }

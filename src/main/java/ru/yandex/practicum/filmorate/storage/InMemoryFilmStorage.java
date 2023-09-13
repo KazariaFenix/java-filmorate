@@ -91,6 +91,11 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void deleteFilm(int id) {
+        id = 0;
+    }
+
     private Film buildFilm(Film film) {
         ++idFilm;
         if (film.getRate() == null) {
