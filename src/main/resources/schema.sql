@@ -5,15 +5,10 @@ drop table USERS cascade;
 drop table DIRECTORS cascade;
 
 drop table FILMS_DIRECTORS  ;
-
 drop table FILMS_GENRE ;
-
 drop table REVIEWS_USERS ;
-
 drop table REVIEWS ;
-
 drop table USERS_LIKE ;
-
 drop table USER_FRIENDS ;
 
 

@@ -17,7 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 @Repository
 @Primary
@@ -25,12 +25,14 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final GenreDbStorage genre;
     private final MPAStorage mpa;
+    private final UserDbStorage userDbStorage;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genre, MPAStorage mpa) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genre, MPAStorage mpa, UserDbStorage userDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.genre = genre;
         this.mpa = mpa;
+        this.userDbStorage = userDbStorage;
     }
 
     @Override
@@ -116,48 +118,49 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.update(sqlRate, (film.getRate() + 1), filmId);
     }
 
-    //-----------------------------------------------------------------------------------------------
     @Override
     public List<Film> getRecommendedFilms(int userId) {
-        List<Film> userFilms = getUserFilms(userId);
 
-        List<Integer> userFilmIds = userFilms.stream()
-                .map(Film::getId)
+        List<Integer> userFilmIds = getUserFilmIds(userId);
+        List<User> otherUsers = getOtherUserList(userId);
+
+        List<List<Film>> collect = otherUsers.stream()
+                .map(user -> getUserFilms((int) user.getId()))
                 .collect(Collectors.toList());
 
-        List<User> users = getUserList(userId);
         List<Film> targetFilms = new ArrayList<>();
         int targetAmount = 0;
         int currentAmount = 0;
 
-        List<List<Film>> collect = users.stream()
-                .map(user -> getUserFilms((int) user.getId()))
-                .collect(Collectors.toList());
-
         for (List<Film> films : collect) {
-            if (films == null || films.isEmpty()){
+            if (films == null || films.isEmpty()) {
                 continue;
             }
             for (Film film : films) {
-                if (userFilmIds.contains(film.getId())){
+                if (userFilmIds.contains(film.getId())) {
                     currentAmount++;
                 }
             }
-            if (currentAmount > targetAmount){
+            if (currentAmount > targetAmount) {
                 targetFilms = films;
                 targetAmount = currentAmount;
             }
             currentAmount = 0;
         }
 
-        if (targetFilms.isEmpty()){
+        if (targetFilms.isEmpty()) {
             return targetFilms;
         }
 
         return targetFilms.stream()
                 .filter(film -> !userFilmIds.contains(film.getId()))
                 .collect(Collectors.toList());
+    }
 
+    private List<Integer> getUserFilmIds(int userId) {
+        String sqlQuery = "SELECT film_id FROM users_like WHERE user_id = ?";
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNUm) -> rs.getInt("film_id"), userId);
     }
 
     private List<Film> getUserFilms(int userId) {
@@ -167,7 +170,13 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")), userId);
     }
 
-    //------------------------------------------------------------------------------------------------
+    private List<User> getOtherUserList(int userId) {
+        String sqlQuery = "SELECT * FROM users where id not in (?)";
+
+        return jdbcTemplate.query(sqlQuery,
+                (rs, rowNum) -> userDbStorage.findUserById(rs.getLong("id")),
+                userId);
+    }
 
     @Override
     public void deleteLike(int filmId, int userId) {
@@ -231,30 +240,5 @@ public class FilmDbStorage implements FilmStorage {
         if (!film.next()) {
             throw new NoSuchElementException("Фильма с таким идентификатором не существует");
         }
-    }
-
-    public User findUserById(long userId) {
-        User user;
-        String sqlQuery = "SELECT * FROM users WHERE id = ?";
-        SqlRowSet userRow = jdbcTemplate.queryForRowSet(sqlQuery, userId);
-
-        if (userRow.next()) {
-            user = User.builder().id(userRow.getLong("id"))
-                    .email(userRow.getString("email"))
-                    .name(userRow.getString("name"))
-                    .login(userRow.getString("login"))
-                    .birthday(userRow.getDate("birthday").toLocalDate())
-                    .build();
-        } else {
-            throw new NoSuchElementException("Пользователь не найден");
-        }
-
-        return user;
-    }
-
-    public List<User> getUserList(int userId) {
-        String sqlQuery = "SELECT * FROM users where id not in (?)";
-
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findUserById(rs.getLong("id")), userId);
     }
 }
