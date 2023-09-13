@@ -118,7 +118,6 @@ public class DirectorDbStorage implements DirectorStorage {
                 "where film_id = ?";
         jdbcTemplate.update(query, filmId);
     }
-
 }
 
 // service class
