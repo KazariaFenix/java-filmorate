@@ -19,5 +19,7 @@ public interface FilmStorage {
 
     void putLike(int filmId, int userId);
 
+    List<Film> getCommonFilms(int userId, int friendId);
+
     List<Film> getRecommendedFilms(int userId);
 }
