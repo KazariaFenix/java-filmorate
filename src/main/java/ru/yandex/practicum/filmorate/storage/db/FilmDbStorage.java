@@ -113,7 +113,6 @@ public class FilmDbStorage implements FilmStorage {
         String sqlUserLike = "MERGE INTO users_like (film_id, user_id) VALUES (?, ?)";
         String sqlRate = "UPDATE films SET rate = ? WHERE film_id = ?";
         Film film = findFilmById(filmId);
-        eventStorage.addEvent(filmId, userId, EventType.LIKE, EventStatus.ADD);
 
         jdbcTemplate.update(sqlUserLike, filmId, userId);
         jdbcTemplate.update(sqlRate, (film.getRate() + 1), filmId);
@@ -196,7 +195,6 @@ public class FilmDbStorage implements FilmStorage {
         String sqlUserLike = "DELETE FROM users_like WHERE film_id = ? AND user_id = ?";
         String sqlRate = "UPDATE films SET rate = ? WHERE film_id = ?";
         Film film = findFilmById(filmId);
-        eventStorage.addEvent(filmId, userId, EventType.LIKE, EventStatus.REMOVE);
 
         jdbcTemplate.update(sqlUserLike, filmId, userId);
         jdbcTemplate.update(sqlRate, (film.getRate() - 1), filmId);

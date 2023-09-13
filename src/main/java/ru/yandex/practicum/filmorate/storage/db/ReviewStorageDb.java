@@ -6,8 +6,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
-import ru.yandex.practicum.filmorate.model.EventStatus;
-import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.EventStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -42,7 +40,6 @@ public class ReviewStorageDb implements ReviewStorage {
                 .usingGeneratedKeyColumns("review_id");
         int key = simpleJdbcInsert.executeAndReturnKey(review.toMap()).intValue();
 
-        eventStorage.addEvent(key, review.getUserId(), EventType.REVIEW, EventStatus.ADD);
         return getReviewById(key);
     }
 
@@ -107,7 +104,6 @@ public class ReviewStorageDb implements ReviewStorage {
 
             Review newReview = getReviewById(review.getReviewId());
 
-            eventStorage.addEvent(newReview.getReviewId(), newReview.getUserId(), EventType.REVIEW, EventStatus.UPDATE);
             return newReview;
         } else {
             throw new ValidationException("Проверьте id отзыва");
@@ -118,7 +114,6 @@ public class ReviewStorageDb implements ReviewStorage {
     public void deleteReviewById(int reviewId) {
         if (validationReview(reviewId)) {
             Review review = getReviewById(reviewId);
-            eventStorage.addEvent(reviewId, review.getUserId(), EventType.REVIEW, EventStatus.REMOVE);
             jdbcTemplate.update("DELETE FROM reviews WHERE review_id = ?", reviewId);
         } else {
             throw new ValidationException("Проверьте id отзыва");
