@@ -5,17 +5,17 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.db.FilmDbStorage;
 
 import java.util.List;
 
 @Service
 @Primary
 public class FilmServiceDb implements FilmService {
-    private final FilmStorage filmStorage;
+    private final FilmDbStorage filmStorage;
 
     @Autowired
-    public FilmServiceDb(FilmStorage filmStorage) {
+    public FilmServiceDb(FilmDbStorage filmStorage) {
         this.filmStorage = filmStorage;
     }
 
@@ -52,6 +52,11 @@ public class FilmServiceDb implements FilmService {
     @Override
     public List<Film> getPopularFilm(int count) {
         return filmStorage.getPopularFilm(count);
+    }
+
+
+    public void deleteFilm(int id) {
+        filmStorage.deleteFilm(id);
     }
 
     public List<Film> getCommonFilms(int userId, int friendId) {
