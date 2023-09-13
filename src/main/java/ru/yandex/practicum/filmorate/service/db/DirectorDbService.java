@@ -45,7 +45,7 @@ public class DirectorDbService {
         return directorDbStorage.addDirector(valid(director));
     }
 
-    public Director getDirectorById (int id) {
+    public Director getDirectorById(int id) {
         if (id <= 0) throw new NoSuchElementException(String.format(errorMessage, id));
         if (directorDbStorage.getDirectorById(id) != null) {
             return directorDbStorage.getDirectorById(id);
