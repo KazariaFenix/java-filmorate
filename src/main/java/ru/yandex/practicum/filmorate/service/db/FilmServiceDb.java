@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.EventStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -62,5 +63,9 @@ public class FilmServiceDb implements FilmService {
 
     public List<Film> getCommonFilms(int userId, int friendId) {
         return filmStorage.getCommonFilms(userId, friendId);
+    }
+
+    public Collection<Film> getFilmsDirectors(int directorId, String sortType) {
+        return filmStorage.filmsByDirectorSorted(directorId, sortType);
     }
 }

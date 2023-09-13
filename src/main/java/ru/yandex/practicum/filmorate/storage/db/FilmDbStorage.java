@@ -1,15 +1,18 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
+
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.*;
 
+
+import javax.validation.ValidationException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -18,22 +21,15 @@ import java.util.stream.Collectors;
 
 @Repository
 @Primary
+@RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final GenreDbStorage genre;
+
     private final MPAStorage mpa;
+    private final DirectorDbStorage directorStorage;
     private final UserStorage userDbStorage;
     private final EventStorage eventStorage;
-
-    @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genre, MPAStorage mpa, UserStorage userDbStorage,
-                         EventStorage eventStorage) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.genre = genre;
-        this.mpa = mpa;
-        this.userDbStorage = userDbStorage;
-        this.eventStorage = eventStorage;
-    }
 
     @Override
     public List<Film> getFilmList() {
@@ -52,6 +48,7 @@ public class FilmDbStorage implements FilmStorage {
         if (film.getGenres() != null) {
             addFilmGenres(film, key);
         }
+        film = addFilmDirectors(film, key);
         return findFilmById(key);
     }
 
@@ -74,6 +71,8 @@ public class FilmDbStorage implements FilmStorage {
         } else {
             deleteGenre(film);
         }
+        directorStorage.deleteFilmDirectors(film.getId());
+        addFilmDirectors(film, film.getId());
         return findFilmById(film.getId());
     }
 
@@ -84,8 +83,11 @@ public class FilmDbStorage implements FilmStorage {
         String sqlFilm = "SELECT * FROM films WHERE film_id = ?";
         String sqlGenre = "SELECT genre_id FROM films_genre WHERE film_id = ?";
         String sqlUsersLike = "SELECT * FROM users_like WHERE film_id = ?";
+        String sqlFilmDirectors = "SELECT * FROM films_directors WHERE film_id = ?";
         List<FilmGenre> genresFilm = jdbcTemplate.query(sqlGenre, (rs, rowNum) -> makeGenre(rs), filmId);
         List<Integer> usersLike = jdbcTemplate.query(sqlUsersLike, (rs, rowNum) -> makeUsersLike(rs), filmId);
+        List<Director> filmsDirectors = jdbcTemplate.query(sqlFilmDirectors, (rs, rowNum) ->
+                directorStorage.getDirectorById(rs.getInt("director_id")), filmId);
         SqlRowSet sqlQuery = jdbcTemplate.queryForRowSet(sqlFilm, filmId);
         Film film = null;
 
@@ -100,6 +102,7 @@ public class FilmDbStorage implements FilmStorage {
                     .mpa(mpa.getMPAById(sqlQuery.getInt("mpa_id")))
                     .genres(new HashSet<>(genresFilm))
                     .userLike(usersLike)
+                    .directors(filmsDirectors)
                     .build();
         }
         return film;
@@ -247,6 +250,12 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
+    private Film addFilmDirectors(Film film, int filmId) {
+        directorStorage.setFilmsDirectors(film.getDirectors(), filmId);
+        Collection<Director> directors = directorStorage.getFilmDirectorsSet(filmId);
+        return film.toBuilder().directors(directors).build();
+    }
+
     private boolean validationUserLike(int filmId, int userId) {
         String sqlQuery = "SELECT * FROM users_like WHERE film_id =? AND user_id = ?";
         SqlRowSet userLike = jdbcTemplate.queryForRowSet(sqlQuery, filmId, userId);
@@ -261,5 +270,38 @@ public class FilmDbStorage implements FilmStorage {
         if (!film.next()) {
             throw new NoSuchElementException("Фильма с таким идентификатором не существует");
         }
+    }
+
+    @Override
+    public Collection<Film> filmsByDirectorSorted(int directorId, String sortBy) {
+        directorStorage.getDirectorById(directorId); // for checking up if director exists
+        SqlRowSet sql;
+        switch (sortBy) {
+            case "year":
+                sql = jdbcTemplate.queryForRowSet("SELECT f.*" +
+                        "FROM films_directors AS fd " +
+                        "JOIN FILMS AS f ON fd.film_id = f.film_id " +
+                        "WHERE director_id = ? " +
+                        "GROUP BY f.film_id, f.release_date " +
+                        "ORDER BY f.release_date", directorId);
+                break;
+
+            case "likes":
+                sql = jdbcTemplate.queryForRowSet("SELECT f.* " +
+                        "FROM films_directors as fd " +
+                        "JOIN films AS f ON fd.film_id = f.film_id " +
+                        "LEFT JOIN users_like AS ul ON f.film_id = ul.film_id " +
+                        "WHERE director_id = ? " +
+                        "GROUP BY f.film_id, ul.film_id IN (SELECT film_id FROM users_like) " +
+                        "ORDER BY COUNT(ul.film_id) DESC", directorId);
+                break;
+            default:
+                throw new ValidationException("Wrong 'sortBy' method");
+        }
+        Collection<Film> result = new ArrayList<>();
+        while (sql.next()) {
+            result.add(findFilmById(sql.getInt("film_id")));
+        }
+        return result;
     }
 }
