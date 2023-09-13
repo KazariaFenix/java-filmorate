@@ -3,8 +3,10 @@ package ru.yandex.practicum.filmorate.service.db;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.db.UserDbStorage;
 
 import java.util.*;
@@ -13,10 +15,12 @@ import java.util.*;
 @Primary
 public class UserServiceDb implements UserService {
     private final UserDbStorage userStorage;
+    private final FilmStorage filmStorage;
 
     @Autowired
-    public UserServiceDb(UserDbStorage userStorage) {
+    public UserServiceDb(UserDbStorage userStorage, FilmStorage filmStorage) {
         this.userStorage = userStorage;
+        this.filmStorage = filmStorage;
     }
 
     @Override
@@ -61,5 +65,9 @@ public class UserServiceDb implements UserService {
 
     public void deleteUser(int id) {
         userStorage.deleteUser(id);
+    }
+
+    public List<Film> getRecommendedFilms(int userId) {
+        return filmStorage.getRecommendedFilms(userId);
     }
 }
