@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
@@ -14,8 +13,7 @@ import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
 import java.util.Collection;
 
 @Slf4j
@@ -120,13 +118,3 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 }
 
-// service class
-class DirectorMapper implements RowMapper<Director> {
-    @Override
-    public Director mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return Director.builder()
-                .id(rs.getInt("director_id"))
-                .name(rs.getString("name"))
-                .build();
-    }
-}
