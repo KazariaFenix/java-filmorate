@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -16,7 +15,6 @@ import java.sql.PreparedStatement;
 
 import java.util.Collection;
 
-@Slf4j
 @Component
 public class DirectorDbStorage implements DirectorStorage {
 
@@ -38,7 +36,6 @@ public class DirectorDbStorage implements DirectorStorage {
             return stmt;
         }, keyHolder);
         director.setId(keyHolder.getKey().intValue());
-        log.info("Director {} was successfully added", director.getName());
         return director;
     }
 
@@ -49,11 +46,9 @@ public class DirectorDbStorage implements DirectorStorage {
                 director.getName(),
                 director.getId());
         if (countLines == 0) {
-            log.warn("Director id={} was not found", director.getId());
             throw new NoSuchElementException(
                     String.format("Director '%s' id=%s was not found", director.getName(), director.getId()));
         }
-        log.info("Director id={} was updated", director.getId());
         return director;
     }
 
@@ -63,7 +58,6 @@ public class DirectorDbStorage implements DirectorStorage {
         try {
             director = jdbcTemplate.queryForObject(
                     "SELECT * FROM directors WHERE director_id = ?", new DirectorMapper(), id);
-            log.debug("Director id={} found", director.getId());
             return director;
         } catch (EmptyResultDataAccessException ex) {
             throw new NoSuchElementException(String.format("Director id=%s was not found", id));
@@ -77,7 +71,7 @@ public class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
-    public boolean killDirectorById(int id) {
+    public boolean deleteDirectorById(int id) {
         String sqlQuery = "delete from directors " +
                 "where director_id = ?";
         int status = jdbcTemplate.update(sqlQuery, id);
@@ -87,7 +81,9 @@ public class DirectorDbStorage implements DirectorStorage {
     // service methods for directors - films link table
     @Override
     public void setFilmsDirectors(Collection<Director> directors, int filmId) {
-        if (directors == null || directors.size() == 0 || directors.isEmpty()) return;
+        if (directors == null || directors.size() == 0 || directors.isEmpty()) {
+            return;
+        }
         String query = "INSERT INTO films_directors(film_id, director_id) VALUES(?,?)";
         for (Director director : directors) {
             try {

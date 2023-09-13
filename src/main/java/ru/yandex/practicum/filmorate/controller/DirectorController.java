@@ -1,22 +1,20 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.service.db.DirectorDbService;
+import ru.yandex.practicum.filmorate.service.DirectorService;
 
 import javax.validation.Valid;
 import java.util.Collection;
 
 @RestController
-@Slf4j
 public class DirectorController {
 
-    DirectorDbService service;
+    private final DirectorService service;
 
     @Autowired
-    DirectorController(DirectorDbService dds) {
+    DirectorController(DirectorService dds) {
         this.service = dds;
     }
 
@@ -42,10 +40,7 @@ public class DirectorController {
     }
 
     @DeleteMapping("/directors/{id}")
-    public boolean deleteDirector(@PathVariable int id, @RequestBody(required = false) Director director) {
-        if (director != null) return service.deleteDirectorById(director.getId());
-        else return service.deleteDirectorById(id);
+    public boolean deleteDirector(@PathVariable int id) {
+        return service.deleteDirectorById(id);
     }
-
-
 }

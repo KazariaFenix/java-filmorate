@@ -14,7 +14,7 @@ public interface DirectorStorage {
 
     public Collection<Director> getAllDirectors();
 
-    public boolean killDirectorById(int id);
+    public boolean deleteDirectorById(int id);
 
     public void setFilmsDirectors(Collection<Director> directors, int filmId);
 

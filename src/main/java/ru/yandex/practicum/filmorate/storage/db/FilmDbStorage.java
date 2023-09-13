@@ -295,7 +295,8 @@ public class FilmDbStorage implements FilmStorage {
                         "GROUP BY f.film_id, ul.film_id IN (SELECT film_id FROM users_like) " +
                         "ORDER BY COUNT(ul.film_id) DESC", directorId);
                 break;
-            default: throw new ValidationException("Wrong 'sortBy' method");
+            default:
+                throw new ValidationException("Wrong 'sortBy' method");
         }
         Collection<Film> result = new ArrayList<>();
         while (sql.next()) {
