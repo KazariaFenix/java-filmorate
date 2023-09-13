@@ -41,6 +41,7 @@ public class ReviewStorageDb implements ReviewStorage {
                 .withTableName("reviews")
                 .usingGeneratedKeyColumns("review_id");
         int key = simpleJdbcInsert.executeAndReturnKey(review.toMap()).intValue();
+
         eventStorage.addEvent(key, review.getUserId(), EventType.REVIEW, EventStatus.ADD);
         return getReviewById(key);
     }
@@ -103,14 +104,14 @@ public class ReviewStorageDb implements ReviewStorage {
             jdbcTemplate.update("UPDATE reviews SET content = ?, is_positive = ? WHERE review_id = ?",
                     review.getContent(),
                     review.getIsPositive(), review.getReviewId());
-            eventStorage.addEvent(review.getReviewId(), review.getUserId(), EventType.REVIEW, EventStatus.UPDATE);
 
-            return getReviewById(review.getReviewId());
+            Review newReview = getReviewById(review.getReviewId());
+
+            eventStorage.addEvent(newReview.getReviewId(), newReview.getUserId(), EventType.REVIEW, EventStatus.UPDATE);
+            return newReview;
         } else {
             throw new ValidationException("Проверьте id отзыва");
         }
-
-
     }
 
     @Override

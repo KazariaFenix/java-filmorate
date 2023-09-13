@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.EventStatus;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.storage.EventStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,10 +20,12 @@ import java.util.List;
 @Primary
 public class EventDbStorage implements EventStorage {
     private final JdbcTemplate jdbcTemplate;
+    private final UserStorage userStorage;
 
     @Autowired
-    public EventDbStorage(JdbcTemplate jdbcTemplate) {
+    public EventDbStorage(JdbcTemplate jdbcTemplate, UserStorage userStorage) {
         this.jdbcTemplate = jdbcTemplate;
+        this.userStorage = userStorage;
     }
 
     @Override
@@ -44,6 +47,7 @@ public class EventDbStorage implements EventStorage {
     public List<Event> getAllEventByUserId(int userId) {
         String sql = "SELECT * FROM events WHERE user_id = ?";
 
+        userStorage.findUserById(userId);
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeEvent(rs), userId);
     }
 

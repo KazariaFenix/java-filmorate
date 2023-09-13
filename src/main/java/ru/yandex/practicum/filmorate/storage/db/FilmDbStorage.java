@@ -7,11 +7,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.FilmGenre;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.MPAStorage;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,14 +22,17 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final GenreDbStorage genre;
     private final MPAStorage mpa;
-    private final UserDbStorage userDbStorage;
+    private final UserStorage userDbStorage;
+    private final EventStorage eventStorage;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genre, MPAStorage mpa, UserDbStorage userDbStorage) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genre, MPAStorage mpa, UserStorage userDbStorage,
+                         EventStorage eventStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.genre = genre;
         this.mpa = mpa;
         this.userDbStorage = userDbStorage;
+        this.eventStorage = eventStorage;
     }
 
     @Override
@@ -113,6 +113,7 @@ public class FilmDbStorage implements FilmStorage {
         String sqlUserLike = "MERGE INTO users_like (film_id, user_id) VALUES (?, ?)";
         String sqlRate = "UPDATE films SET rate = ? WHERE film_id = ?";
         Film film = findFilmById(filmId);
+        eventStorage.addEvent(filmId, userId, EventType.LIKE, EventStatus.ADD);
 
         jdbcTemplate.update(sqlUserLike, filmId, userId);
         jdbcTemplate.update(sqlRate, (film.getRate() + 1), filmId);
@@ -195,6 +196,7 @@ public class FilmDbStorage implements FilmStorage {
         String sqlUserLike = "DELETE FROM users_like WHERE film_id = ? AND user_id = ?";
         String sqlRate = "UPDATE films SET rate = ? WHERE film_id = ?";
         Film film = findFilmById(filmId);
+        eventStorage.addEvent(filmId, userId, EventType.LIKE, EventStatus.REMOVE);
 
         jdbcTemplate.update(sqlUserLike, filmId, userId);
         jdbcTemplate.update(sqlRate, (film.getRate() - 1), filmId);
