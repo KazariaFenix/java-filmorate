@@ -7,11 +7,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.FilmGenre;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.MPAStorage;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,14 +22,17 @@ public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final GenreDbStorage genre;
     private final MPAStorage mpa;
-    private final UserDbStorage userDbStorage;
+    private final UserStorage userDbStorage;
+    private final EventStorage eventStorage;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genre, MPAStorage mpa, UserDbStorage userDbStorage) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreDbStorage genre, MPAStorage mpa, UserStorage userDbStorage,
+                         EventStorage eventStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.genre = genre;
         this.mpa = mpa;
         this.userDbStorage = userDbStorage;
+        this.eventStorage = eventStorage;
     }
 
     @Override
@@ -201,7 +201,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopularFilm(int count) {
+    public List<Film> getPopularFilm(int count, int genreId, int year) {
         String sqlQuery = "select *\n" +
                 "from FILMS  F LEFT JOIN  users_like L on F.FILM_ID  = L.FILM_ID\n " +
                 "GROUP BY F.FILM_ID, L.USER_ID ORDER BY COUNT(L.USER_ID) DESC LIMIT ?";
@@ -213,6 +213,7 @@ public class FilmDbStorage implements FilmStorage {
         return list;
     }
 
+    @Override
     public void deleteFilm(int id) {
         validationFilm(id);
         String sqlUserLike = "DELETE FROM FILMS WHERE film_id = ?";

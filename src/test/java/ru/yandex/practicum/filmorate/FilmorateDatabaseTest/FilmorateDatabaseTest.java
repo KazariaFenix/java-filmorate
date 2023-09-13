@@ -361,7 +361,7 @@ public class FilmorateDatabaseTest {
         filmService.putLike(firstFilm.getId(), (int) firstUser.getId());
         filmService.putLike(secondFilm.getId(), (int) secondUser.getId());
         filmService.putLike(secondFilm.getId(), (int) firstFilm.getId());
-        List<Film> listPopular = filmService.getPopularFilm(10);
+        List<Film> listPopular = filmService.getPopularFilm(10, 0, 0);
         listPopular.forEach(System.out::println);
 
         assertThat(listPopular).asList().hasSize(2);
