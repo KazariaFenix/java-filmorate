@@ -12,12 +12,10 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.Director;
 
-import javax.validation.ValidationException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Set;
 
 @Slf4j
 @Component
@@ -106,8 +104,8 @@ public class DirectorDbStorage {
         return jdbcTemplate.query(query, new DirectorMapper(), filmId);
     }
 
-    public void deleteFilmDirectors(Integer filmId) {
-        String query = "delete from film_directors " +
+    public void deleteFilmDirectors(int filmId) {
+        String query = "delete from films_directors " +
                 "where film_id = ?";
         jdbcTemplate.update(query, filmId);
     }

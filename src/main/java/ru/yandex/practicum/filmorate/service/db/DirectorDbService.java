@@ -23,7 +23,7 @@ public class DirectorDbService {
     private Director valid(Director director) {
         if (director == null) throw new ValidationException("Director is null");
         if (director.getId() > 0) {
-            if (!director.getName().isBlank() || !director.getName().isEmpty()) {
+            if (!director.getName().isBlank() && !director.getName().isEmpty()) {
                 return director;
             } else throw new ValidationException("Director's name shouldn't be empty");
         } else throw new ValidationException("Director's id should be more than 0");

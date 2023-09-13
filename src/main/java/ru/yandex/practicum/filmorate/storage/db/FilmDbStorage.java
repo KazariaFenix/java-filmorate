@@ -22,6 +22,7 @@ import java.util.*;
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final GenreDbStorage genre;
+
     private final MPAStorage mpa;
     private final DirectorDbStorage directorStorage;
 
@@ -73,6 +74,8 @@ public class FilmDbStorage implements FilmStorage {
         } else {
             deleteGenre(film);
         }
+        directorStorage.deleteFilmDirectors(film.getId());
+        addFilmDirectors(film, film.getId());
         return findFilmById(film.getId());
     }
 
@@ -83,8 +86,11 @@ public class FilmDbStorage implements FilmStorage {
         String sqlFilm = "SELECT * FROM films WHERE film_id = ?";
         String sqlGenre = "SELECT genre_id FROM films_genre WHERE film_id = ?";
         String sqlUsersLike = "SELECT * FROM users_like WHERE film_id = ?";
+        String sqlFilmDirectors = "SELECT * FROM films_directors WHERE film_id = ?";
         List<FilmGenre> genresFilm = jdbcTemplate.query(sqlGenre, (rs, rowNum) -> makeGenre(rs), filmId);
         List<Integer> usersLike = jdbcTemplate.query(sqlUsersLike, (rs, rowNum) -> makeUsersLike(rs), filmId);
+        List<Director> filmsDirectors = jdbcTemplate.query(sqlFilmDirectors, (rs, rowNum) ->
+                directorStorage.getDirectorById(rs.getInt("director_id")), filmId);
         SqlRowSet sqlQuery = jdbcTemplate.queryForRowSet(sqlFilm, filmId);
         Film film = null;
 
@@ -99,6 +105,7 @@ public class FilmDbStorage implements FilmStorage {
                     .mpa(mpa.getMPAById(sqlQuery.getInt("mpa_id")))
                     .genres(new HashSet<>(genresFilm))
                     .userLike(usersLike)
+                    .directors(filmsDirectors)
                     .build();
         }
         return film;
@@ -166,9 +173,9 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Film addFilmDirectors(Film film, int filmId) {
-        directorStorage.setFilmsDirectors(film.getDirector(), filmId);
+        directorStorage.setFilmsDirectors(film.getDirectors(), filmId);
         Collection<Director> directors = directorStorage.getFilmDirectorsSet(filmId);
-        return film.toBuilder().director(directors).build();
+        return film.toBuilder().directors(directors).build();
     }
 
     private boolean validationUserLike(int filmId, int userId) {
