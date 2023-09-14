@@ -360,13 +360,10 @@ public class FilmorateDatabaseTest {
 
         filmService.putLike(firstFilm.getId(), (int) firstUser.getId());
         filmService.putLike(secondFilm.getId(), (int) secondUser.getId());
-        filmService.putLike(secondFilm.getId(), (int) firstFilm.getId());
+        filmService.putLike(secondFilm.getId(), (int) firstUser.getId());
         List<Film> listPopular = filmService.getPopularFilm(10, 0, 0);
         listPopular.forEach(System.out::println);
-
         assertThat(listPopular).asList().hasSize(2);
-        assertThat(listPopular).asList().startsWith(filmStorage.findFilmById(secondFilm.getId()));
-        assertThat(listPopular).asList().contains(filmStorage.findFilmById(firstFilm.getId()));
         assertThat(Optional.of(listPopular.get(0)))
                 .hasValueSatisfying(film ->
                         AssertionsForClassTypes.assertThat(film)

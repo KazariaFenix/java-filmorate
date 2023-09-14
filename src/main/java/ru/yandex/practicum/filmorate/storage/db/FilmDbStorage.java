@@ -204,15 +204,36 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getPopularFilm(int count, int genreId, int year) {
-        String sqlQuery = "select *\n" +
-                "from FILMS  F LEFT JOIN  users_like L on F.FILM_ID  = L.FILM_ID\n " +
-                "GROUP BY F.FILM_ID, L.USER_ID ORDER BY COUNT(L.USER_ID) DESC LIMIT ?";
-        List<Film> list = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
-                count);
-        Set<Film> filmSet = new HashSet<>(list);
-        list.clear();
-        list.addAll(filmSet);
-        return list;
+        Map<Long, Set<FilmGenre>> genres = getAllGenre();
+        Map<Long, FilmMPA> mpa = getAllMpa();
+        Map<Long, Set<Director>> directors = getAllDirectors();
+
+        if (year == 0 && genreId != 0) {
+            String sqlQuery = "SELECT * FROM films AS f LEFT JOIN films_genre AS fl ON f.film_id = fl.film_id " +
+                    "LEFT JOIN genre AS g ON fl.genre_id = g.genre_id " +
+                    "WHERE fl.genre_id = ? ORDER BY rate DESC LIMIT ?";
+
+            return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs, genres, mpa, directors), genreId, count);
+        }
+        if (year != 0 && genreId == 0) {
+            String sqlQuery = "SELECT * FROM films WHERE EXTRACT (YEAR FROM CAST (release_date AS date)) = ? " +
+                    "ORDER BY rate DESC LIMIT ?";
+
+            return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs, genres, mpa, directors),
+                    year, count);
+        }
+        if (year == 0 && genreId == 0) {
+            String sqlQuery = "SELECT * FROM films ORDER BY rate DESC LIMIT ?";
+
+            return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs, genres, mpa, directors), count);
+        }
+        String sqlQuery = "SELECT * FROM films AS f LEFT JOIN films_genre AS fl ON f.film_id = fl.film_id " +
+                "LEFT JOIN genre AS g ON fl.genre_id = g.genre_id " +
+                "WHERE EXTRACT (YEAR FROM CAST (f.release_date AS date)) = ? " +
+                "AND fl.genre_id = ? ORDER BY rate DESC LIMIT ?";
+
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs, genres, mpa, directors),
+                year, genreId, count);
     }
 
     @Override
@@ -292,20 +313,23 @@ public class FilmDbStorage implements FilmStorage {
                     "WHERE d.name ILIKE ?\n" +
                     "group by f.FILM_ID\n" +
                     "ORDER BY quantiy desc;";
-            return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, filmIdGenres, filmIdMpa, filmIdDirector), request);
+            return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, filmIdGenres, filmIdMpa, filmIdDirector),
+                    request);
         } else throw new NoSuchElementException("Фильм с таким запросом не существует");
 
 
     }
 
-    private Film makeFilm(ResultSet rs, Map<Long, Set<FilmGenre>> filmIdGenres, Map<Long, FilmMPA> filmIdMpa, Map<Long, Set<Director>> filmIdDirector) throws SQLException {
+    private Film makeFilm(ResultSet rs, Map<Long, Set<FilmGenre>> filmIdGenres, Map<Long, FilmMPA> filmIdMpa,
+                          Map<Long, Set<Director>> filmIdDirector) throws SQLException {
         return Film.builder()
                 .id(rs.getInt("film_id"))
                 .name(rs.getString("name"))
                 .description(rs.getString("description"))
                 .releaseDate(Objects.requireNonNull(rs.getTimestamp("release_date"))
                         .toLocalDateTime().toLocalDate()).duration(rs.getInt("duration"))
-                .rate(rs.getInt("rate")).mpa(filmIdMpa.get(rs.getLong("film_id")))
+                .rate(rs.getInt("rate"))
+                .mpa(filmIdMpa.get(rs.getLong("film_id")))
                 .genres(filmIdGenres.getOrDefault(rs.getLong("film_id"), new HashSet<>()))
                 .directors(filmIdDirector.getOrDefault(rs.getLong("film_id"), new HashSet<>()))
                 .build();
@@ -313,11 +337,15 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Map<Long, Set<FilmGenre>> getAllGenre() {
-        SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT fg.FILM_ID, fg.GENRE_ID , NAME  FROM FILMS_GENRE fg INNER JOIN GENRE G on FG.genre_id = G.genre_id");
+        SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT fg.FILM_ID, fg.GENRE_ID , NAME  FROM FILMS_GENRE fg " +
+                "INNER JOIN GENRE G on FG.genre_id = G.genre_id");
         Map<Long, Set<FilmGenre>> filmsGenres = new HashMap<>();
         long filmId;
         while (rs.next()) {
-            FilmGenre genre = FilmGenre.builder().id(rs.getInt("genre_id")).name(rs.getString("name")).build();
+            FilmGenre genre = FilmGenre.builder()
+                    .id(rs.getInt("genre_id"))
+                    .name(rs.getString("name"))
+                    .build();
             Set<FilmGenre> genres = new HashSet<>();
             filmId = rs.getLong("film_id");
             if (filmsGenres.containsKey(filmId)) {
@@ -330,7 +358,8 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Map<Long, FilmMPA> getAllMpa() {
-        SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT film_id, M.mpa_id, M.TITLE FROM FILMS INNER JOIN MPA M on FILMS.mpa_id = M.mpa_id;");
+        SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT film_id, M.mpa_id, M.TITLE FROM FILMS " +
+                "INNER JOIN MPA M on FILMS.mpa_id = M.mpa_id;");
         Map<Long, FilmMPA> filmIdMpa = new HashMap<>();
         while (rs.next()) {
             FilmMPA mpa = FilmMPA.builder().name(rs.getString("title")).id(rs.getInt("mpa_id")).build();
@@ -346,7 +375,10 @@ public class FilmDbStorage implements FilmStorage {
         Map<Long, Set<Director>> filmDirectors = new HashMap<>();
         long filmId;
         while (rs.next()) {
-            Director director = Director.builder().id(rs.getInt("director_id")).name(rs.getString("name")).build();
+            Director director = Director.builder()
+                    .id(rs.getInt("director_id"))
+                    .name(rs.getString("name"))
+                    .build();
             Set<Director> directors = new HashSet<>();
             filmId = rs.getLong("film_id");
             if (filmDirectors.containsKey(filmId)) {
