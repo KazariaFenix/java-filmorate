@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,16 +14,12 @@ import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 import java.sql.PreparedStatement;
 
 import java.util.Collection;
+import java.util.Objects;
 
 @Component
-public class DirectorDbStorage implements DirectorStorage {
-
+@RequiredArgsConstructor
+class DirectorDbStorage implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public DirectorDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     // main methods
     @Override
@@ -35,7 +31,7 @@ public class DirectorDbStorage implements DirectorStorage {
             stmt.setString(1, director.getName());
             return stmt;
         }, keyHolder);
-        director.setId(keyHolder.getKey().intValue());
+        director.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
         return director;
     }
 
@@ -66,8 +62,7 @@ public class DirectorDbStorage implements DirectorStorage {
 
     @Override
     public Collection<Director> getAllDirectors() {
-        Collection<Director> directors = jdbcTemplate.query("SELECT * FROM directors", new DirectorMapper());
-        return directors;
+        return jdbcTemplate.query("SELECT * FROM directors", new DirectorMapper());
     }
 
     @Override
@@ -81,7 +76,7 @@ public class DirectorDbStorage implements DirectorStorage {
     // service methods for directors - films link table
     @Override
     public void setFilmsDirectors(Collection<Director> directors, int filmId) {
-        if (directors == null || directors.size() == 0 || directors.isEmpty()) {
+        if (directors == null || directors.isEmpty()) {
             return;
         }
         String query = "INSERT INTO films_directors(film_id, director_id) VALUES(?,?)";
@@ -89,7 +84,7 @@ public class DirectorDbStorage implements DirectorStorage {
             try {
                 director = jdbcTemplate.queryForObject("SELECT * FROM directors WHERE director_id = ?",
                         new DirectorMapper(), director.getId());
-                jdbcTemplate.update(query, filmId, director.getId());
+                jdbcTemplate.update(query, filmId, Objects.requireNonNull(director).getId());
             } catch (DataIntegrityViolationException | NullPointerException ex) {
                 throw new RuntimeException(String.format("Couldn't update directors list for film id=%s", filmId));
             }

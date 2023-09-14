@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 @Primary
 @RequiredArgsConstructor
-public class FilmServiceDb implements FilmService {
+class FilmServiceDb implements FilmService {
     private final FilmStorage filmStorage;
     private final EventStorage eventStorage;
 
@@ -48,7 +48,7 @@ public class FilmServiceDb implements FilmService {
 
     @Override
     public List<Film> searchFilms(String query, List<String> by) {
-        return filmStorage.searchFilms(query,by);
+        return filmStorage.searchFilms(query, by);
     }
 
     @Override

@@ -1,21 +1,19 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.memory;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.memory.InMemoryUserStorage;
 
 import java.util.List;
 
 @Service
-public class InMemoryUserService implements UserService {
+@RequiredArgsConstructor
+class InMemoryUserService implements UserService {
     private final InMemoryUserStorage storage;
-
-    @Autowired
-    InMemoryUserService(InMemoryUserStorage storage) {
-        this.storage = storage;
-    }
 
     @Override
     public List<User> getUserList() {
@@ -63,7 +61,11 @@ public class InMemoryUserService implements UserService {
     }
 
     @Override
+    public List<Film> getRecommendedFilms(int userId) {
+        return null;
+    }
+
+    @Override
     public void deleteUser(int id) {
-        id = 0;
     }
 }

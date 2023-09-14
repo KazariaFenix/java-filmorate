@@ -1,26 +1,20 @@
 package ru.yandex.practicum.filmorate.service.db;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
-import ru.yandex.practicum.filmorate.storage.db.DirectorDbStorage;
 
 import javax.validation.ValidationException;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
 @Service
-public class DirectorDbService implements DirectorService {
-
+@RequiredArgsConstructor
+class DirectorDbService implements DirectorService {
     private final DirectorStorage directorStorage;
     private static final String ERROR_MESSAGE = "Director id='%s' was not found";
-
-    @Autowired
-    DirectorDbService(DirectorDbStorage directorDbStorage) {
-        this.directorStorage = directorDbStorage;
-    }
 
     private Director valid(Director director) {
         if (director == null) {
@@ -78,6 +72,4 @@ public class DirectorDbService implements DirectorService {
     public Collection<Director> getAllDirectors() {
         return directorStorage.getAllDirectors();
     }
-
-
 }

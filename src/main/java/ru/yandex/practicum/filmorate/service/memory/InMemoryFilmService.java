@@ -1,20 +1,18 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.memory;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+
 
 import java.util.*;
 
 @Service
-public class InMemoryFilmService implements FilmService {
-    private final InMemoryFilmStorage filmStorage;
-
-    @Autowired
-    public InMemoryFilmService(InMemoryFilmStorage filmStorage) {
-        this.filmStorage = filmStorage;
-    }
+@RequiredArgsConstructor
+class InMemoryFilmService implements FilmService {
+    private final FilmStorage filmStorage;
 
     @Override
     public List<Film> getFilmList() {
@@ -43,6 +41,20 @@ public class InMemoryFilmService implements FilmService {
 
     @Override
     public List<Film> searchFilms(String query, List<String> by) {
+        return null;
+    }
+
+    @Override
+    public void deleteFilm(int id) {
+    }
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return null;
+    }
+
+    @Override
+    public Collection<Film> getFilmsDirectors(int directorId, String sortType) {
         return null;
     }
 

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-@Value
+@Data
 @Builder(toBuilder = true)
 public class Film {
     private final int id;
@@ -31,16 +31,14 @@ public class Film {
 
 
     public Map<String, Object> toMap() {
-        Map<String, Object> user = new HashMap<>();
-
-        user.put("name", name);
-        user.put("description", description);
-        user.put("release_date", releaseDate);
-        user.put("duration", duration);
-        user.put("rate", rate);
-        user.put("mpa_id", mpa.getId());
-
-        return user;
+        Map<String, Object> film = new HashMap<>();
+        film.put("name", name);
+        film.put("description", description);
+        film.put("release_date", releaseDate);
+        film.put("duration", duration);
+        film.put("rate", rate);
+        film.put("mpa_id", mpa.getId());
+        return film;
     }
 
 }

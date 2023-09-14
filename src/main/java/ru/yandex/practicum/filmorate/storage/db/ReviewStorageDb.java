@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.storage.EventStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -18,11 +17,9 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class ReviewStorageDb implements ReviewStorage {
-
     private final JdbcTemplate jdbcTemplate;
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
-    private final EventStorage eventStorage;
 
     @Override
     public Review createReview(Review review) {
@@ -60,7 +57,6 @@ public class ReviewStorageDb implements ReviewStorage {
         } else {
             throw new NoSuchElementException("Проверьте id отзыва");
         }
-
     }
 
     @Override
@@ -101,10 +97,7 @@ public class ReviewStorageDb implements ReviewStorage {
             jdbcTemplate.update("UPDATE reviews SET content = ?, is_positive = ? WHERE review_id = ?",
                     review.getContent(),
                     review.getIsPositive(), review.getReviewId());
-
-            Review newReview = getReviewById(review.getReviewId());
-
-            return newReview;
+            return getReviewById(review.getReviewId());
         } else {
             throw new ValidationException("Проверьте id отзыва");
         }
@@ -113,7 +106,7 @@ public class ReviewStorageDb implements ReviewStorage {
     @Override
     public void deleteReviewById(int reviewId) {
         if (validationReview(reviewId)) {
-            Review review = getReviewById(reviewId);
+           // Review review = getReviewById(reviewId);
             jdbcTemplate.update("DELETE FROM reviews WHERE review_id = ?", reviewId);
         } else {
             throw new ValidationException("Проверьте id отзыва");
