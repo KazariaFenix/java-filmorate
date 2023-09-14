@@ -111,6 +111,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         id = 0;
     }
 
+    @Override
+    public List<Film> searchFilms(String query, List<String> by) {
+        return null;
+    }
+
     private Film buildFilm(Film film) {
         ++idFilm;
         if (film.getRate() == null) {

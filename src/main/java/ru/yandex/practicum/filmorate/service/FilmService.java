@@ -18,4 +18,6 @@ public interface FilmService {
     void deleteLike(int filmId, int userId);
 
     void putLike(int filmId, int userId);
+
+    List<Film> searchFilms(String query, List<String> by);
 }

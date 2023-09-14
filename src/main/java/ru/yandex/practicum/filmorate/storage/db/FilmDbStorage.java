@@ -29,7 +29,6 @@ public class FilmDbStorage implements FilmStorage {
     private final MPAStorage mpa;
     private final DirectorDbStorage directorStorage;
     private final UserStorage userDbStorage;
-    private final EventStorage eventStorage;
 
     @Override
     public List<Film> getFilmList() {
@@ -48,7 +47,7 @@ public class FilmDbStorage implements FilmStorage {
         if (film.getGenres() != null) {
             addFilmGenres(film, key);
         }
-        film = addFilmDirectors(film, key);
+        addFilmDirectors(film, key);
         return findFilmById(key);
     }
 
@@ -72,7 +71,7 @@ public class FilmDbStorage implements FilmStorage {
             deleteGenre(film);
         }
         directorStorage.deleteFilmDirectors(film.getId());
-        addFilmDirectors(film, film.getId());
+        film = addFilmDirectors(film, film.getId());
         return findFilmById(film.getId());
     }
 
@@ -98,7 +97,7 @@ public class FilmDbStorage implements FilmStorage {
                     .rate(sqlQuery.getInt("rate"))
                     .description(sqlQuery.getString("description"))
                     .duration(sqlQuery.getInt("duration"))
-                    .releaseDate(sqlQuery.getDate("release_date").toLocalDate())
+                    .releaseDate(Objects.requireNonNull(sqlQuery.getDate("release_date")).toLocalDate())
                     .mpa(mpa.getMPAById(sqlQuery.getInt("mpa_id")))
                     .genres(new HashSet<>(genresFilm))
                     .userLike(usersLike)
@@ -222,6 +221,144 @@ public class FilmDbStorage implements FilmStorage {
         String sqlUserLike = "DELETE FROM FILMS WHERE film_id = ?";
         jdbcTemplate.update(sqlUserLike, id);
     }
+
+    @Override
+    public List<Film> searchFilms(String query, List<String> titleOrDirector) {
+        String sql;
+        String request = "%" + query + "%";
+        boolean title = false;
+        boolean director = false;
+        Map<Long, Set<FilmGenre>> filmIdGenres = getAllGenre();
+        Map<Long, FilmMPA> filmIdMpa = getAllMpa();
+        Map<Long, Set<Director>> filmIdDirector = getAllDirectors();
+
+        for (String by : titleOrDirector) {
+            if (by.equals("director")) {
+                director = true;
+            }
+            if (by.equals("title")) {
+                title = true;
+            }
+        }
+
+        if (director && title) {
+            sql = "SELECT f.FILM_ID,\n" +
+                    "       f.name,\n" +
+                    "       f.description,\n" +
+                    "       f.rate,\n" +
+                    "       f.release_date,\n" +
+                    "       f.duration,\n" +
+                    "       f.MPA_ID,\n" +
+                    "       COUNT(ul.user_id) as quantiy\n" +
+                    "FROM FILMS f\n" +
+                    "         LEFT JOIN users_like ul on f.film_id = ul.film_id\n" +
+                    "         LEFT JOIN films_directors fd ON f.film_id = fd.film_id\n" +
+                    "         LEFT JOIN directors d ON fd.director_id = d.director_id\n" +
+                    "WHERE f.name ILIKE ?\n" +
+                    "   OR d.name ILIKE ?\n" +
+                    "group by f.FILM_ID\n" +
+                    "ORDER BY quantiy desc;";
+            return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, filmIdGenres, filmIdMpa, filmIdDirector), request, request);
+        }
+        if (title) {
+            sql = "SELECT f.FILM_ID,\n" +
+                    "       f.name,\n" +
+                    "       f.description,\n" +
+                    "       f.rate,\n" +
+                    "       f.release_date,\n" +
+                    "       f.duration,\n" +
+                    "       f.MPA_ID,\n" +
+                    "       COUNT(ul.user_id) as quantiy\n" +
+                    "FROM FILMS f\n" +
+                    "         LEFT JOIN users_like ul on f.film_id = ul.film_id\n" +
+                    "WHERE f.NAME ilike ?\n" +
+                    "group by f.FILM_ID\n" +
+                    "ORDER BY quantiy;";
+            return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, filmIdGenres, filmIdMpa, filmIdDirector), request);
+        }
+        if (director) {
+            sql = "SELECT f.FILM_ID,\n" +
+                    "       f.name,\n" +
+                    "       f.description,\n" +
+                    "       f.rate,\n" +
+                    "       f.release_date,\n" +
+                    "       f.duration,\n" +
+                    "       f.MPA_ID,\n" +
+                    "       COUNT(ul.user_id) as quantiy\n" +
+                    "FROM FILMS f\n" +
+                    "         LEFT JOIN users_like ul on f.film_id = ul.film_id\n" +
+                    "         LEFT JOIN films_directors fd ON f.film_id = fd.film_id\n" +
+                    "         LEFT JOIN directors d ON fd.director_id = d.director_id\n" +
+                    "WHERE d.name ILIKE ?\n" +
+                    "group by f.FILM_ID\n" +
+                    "ORDER BY quantiy desc;";
+            return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, filmIdGenres, filmIdMpa, filmIdDirector), request);
+        } else throw new NoSuchElementException("Фильм с таким запросом не существует");
+
+
+    }
+
+    private Film makeFilm(ResultSet rs, Map<Long, Set<FilmGenre>> filmIdGenres, Map<Long, FilmMPA> filmIdMpa, Map<Long, Set<Director>> filmIdDirector) throws SQLException {
+        return Film.builder()
+                .id(rs.getInt("film_id"))
+                .name(rs.getString("name"))
+                .description(rs.getString("description"))
+                .releaseDate(Objects.requireNonNull(rs.getTimestamp("release_date"))
+                        .toLocalDateTime().toLocalDate()).duration(rs.getInt("duration"))
+                .rate(rs.getInt("rate")).mpa(filmIdMpa.get(rs.getLong("film_id")))
+                .genres(filmIdGenres.getOrDefault(rs.getLong("film_id"), new HashSet<>()))
+                .directors(filmIdDirector.getOrDefault(rs.getLong("film_id"), new HashSet<>()))
+                .build();
+
+    }
+
+    private Map<Long, Set<FilmGenre>> getAllGenre() {
+        SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT fg.FILM_ID, fg.GENRE_ID , NAME  FROM FILMS_GENRE fg INNER JOIN GENRE G on FG.genre_id = G.genre_id");
+        Map<Long, Set<FilmGenre>> filmsGenres = new HashMap<>();
+        long filmId;
+        while (rs.next()) {
+            FilmGenre genre = FilmGenre.builder().id(rs.getInt("genre_id")).name(rs.getString("name")).build();
+            Set<FilmGenre> genres = new HashSet<>();
+            filmId = rs.getLong("film_id");
+            if (filmsGenres.containsKey(filmId)) {
+                genres = filmsGenres.get(filmId);
+            }
+            genres.add(genre);
+            filmsGenres.put(filmId, genres);
+        }
+        return filmsGenres;
+    }
+
+    private Map<Long, FilmMPA> getAllMpa() {
+        SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT film_id, M.mpa_id, M.TITLE FROM FILMS INNER JOIN MPA M on FILMS.mpa_id = M.mpa_id;");
+        Map<Long, FilmMPA> filmIdMpa = new HashMap<>();
+        while (rs.next()) {
+            FilmMPA mpa = FilmMPA.builder().name(rs.getString("title")).id(rs.getInt("mpa_id")).build();
+            filmIdMpa.put(rs.getLong("film_id"), mpa);
+        }
+        return filmIdMpa;
+    }
+
+    private Map<Long, Set<Director>> getAllDirectors() {
+        SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT film_id, d.director_id , name FROM  FILMS_DIRECTORS\n" +
+                "LEFT JOIN directors d on d.director_id = FILMS_DIRECTORS.director_id\n" +
+                "order by film_id;");
+        Map<Long, Set<Director>> filmDirectors = new HashMap<>();
+        long filmId;
+        while (rs.next()) {
+            Director director = Director.builder().id(rs.getInt("director_id")).name(rs.getString("name")).build();
+            Set<Director> directors = new HashSet<>();
+            filmId = rs.getLong("film_id");
+            if (filmDirectors.containsKey(filmId)) {
+                directors = filmDirectors.get(filmId);
+            }
+            directors.add(director);
+            filmDirectors.put(rs.getLong("film_id"), directors);
+        }
+        return filmDirectors;
+
+    }
+
 
     private FilmGenre makeGenre(ResultSet rs) throws SQLException {
         return genre.getGenreById(rs.getInt("genre_id"));

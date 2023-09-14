@@ -86,3 +86,4 @@ film_id integer REFERENCES films(film_id)  ON DELETE CASCADE,
 genre_id integer REFERENCES genre(genre_id)  ON DELETE CASCADE,
 PRIMARY KEY(film_id, genre_id)
 );
+
