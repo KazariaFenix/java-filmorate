@@ -1,22 +1,19 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.db.FilmServiceDb;
+import ru.yandex.practicum.filmorate.service.FilmService;
+
 
 import javax.validation.Valid;
 import java.util.*;
 
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
-    private final FilmServiceDb service;
-
-    @Autowired
-    public FilmController(FilmServiceDb service) {
-        this.service = service;
-    }
+    private final FilmService service;
 
     @GetMapping
     public List<Film> getFilmList() {
@@ -69,5 +66,12 @@ public class FilmController {
     @GetMapping("/director/{directorId}")
     public Collection<Film> getFilmsDirectors(@Valid @PathVariable int directorId, @RequestParam String sortBy) {
         return service.getFilmsDirectors(directorId, sortBy);
+    }
+
+    @GetMapping("/search")
+    public List<Film> searchFilms(@RequestParam(name = "query") String query,
+                                  @RequestParam(name = "by") List<String> titleOrDirector) {
+
+        return service.searchFilms(query, titleOrDirector);
     }
 }

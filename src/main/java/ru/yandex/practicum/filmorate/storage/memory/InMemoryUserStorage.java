@@ -1,15 +1,16 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.memory;
 
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
-public class InMemoryUserStorage implements UserStorage {
-    private final Map<Integer, User> userMap = new LinkedHashMap();
+class InMemoryUserStorage implements UserStorage {
+    private final Map<Integer, User> userMap = new LinkedHashMap<>();
     private int idUser = 0;
 
     @Override

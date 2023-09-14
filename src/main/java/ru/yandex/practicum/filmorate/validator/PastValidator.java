@@ -18,7 +18,7 @@ public class PastValidator implements ConstraintValidator<IsAfter, LocalDate> {
     @Override
     public boolean isValid(LocalDate value, ConstraintValidatorContext context) {
         String[] splitDate = validDate.split("_");
-        return value != null && value.isAfter(LocalDate.of(Integer.valueOf(splitDate[0]),
-                Integer.valueOf(splitDate[1]), Integer.valueOf(splitDate[2])));
+        return value != null && value.isAfter(LocalDate.of(Integer.parseInt(splitDate[0]),
+                Integer.parseInt(splitDate[1]), Integer.parseInt(splitDate[2])));
     }
 }

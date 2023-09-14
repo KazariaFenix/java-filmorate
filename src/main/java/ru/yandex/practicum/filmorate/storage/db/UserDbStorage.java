@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,15 +13,12 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
 
-@Repository
-@Primary
-public class UserDbStorage implements UserStorage {
-    private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+@Primary
+@Repository
+@RequiredArgsConstructor
+class UserDbStorage implements UserStorage {
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public User addUser(User user) {
@@ -30,9 +28,7 @@ public class UserDbStorage implements UserStorage {
                 .withTableName("users")
                 .usingGeneratedKeyColumns("id");
         long key = simpleJdbcInsert.executeAndReturnKey(user.toMap()).longValue();
-        User newUser = findUserById(key);
-
-        return newUser;
+        return findUserById(key);
     }
 
     @Override
@@ -47,9 +43,7 @@ public class UserDbStorage implements UserStorage {
                 user.getLogin(),
                 user.getBirthday(),
                 user.getId());
-        User newUser = findUserById(user.getId());
-
-        return newUser;
+        return findUserById(user.getId());
     }
 
     @Override
@@ -70,7 +64,7 @@ public class UserDbStorage implements UserStorage {
                     .email(userRow.getString("email"))
                     .name(userRow.getString("name"))
                     .login(userRow.getString("login"))
-                    .birthday(userRow.getDate("birthday").toLocalDate())
+                    .birthday(Objects.requireNonNull(userRow.getDate("birthday")).toLocalDate())
                     .build();
         } else {
             throw new NoSuchElementException("userId");
@@ -84,9 +78,8 @@ public class UserDbStorage implements UserStorage {
         validationIdUser(userId);
 
         String sqlQuery = "SELECT friend_id FROM user_friends WHERE user_id = ?";
-        List<User> friends = jdbcTemplate.query(sqlQuery, (rs, rowNum) ->
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) ->
                 findUserById(rs.getInt("friend_id")), userId);
-        return friends;
     }
 
     @Override
@@ -156,7 +149,6 @@ public class UserDbStorage implements UserStorage {
     private boolean isFriends(long userId, long friendId) {
         String sqlQuery = "SELECT * FROM user_friends WHERE user_id = ? AND friend_id = ?";
         SqlRowSet userFriends = jdbcTemplate.queryForRowSet(sqlQuery, userId, friendId);
-
         return !userFriends.next();
     }
 }

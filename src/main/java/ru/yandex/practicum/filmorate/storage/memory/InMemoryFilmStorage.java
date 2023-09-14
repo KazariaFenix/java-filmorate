@@ -1,14 +1,16 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.memory;
+
 
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
-public class InMemoryFilmStorage implements FilmStorage {
+class InMemoryFilmStorage implements FilmStorage {
     private final Map<Integer, Film> filmMap = new LinkedHashMap<>();
     private int idFilm = 0;
 
@@ -19,7 +21,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film addFilm(Film film) {
-        if (filmMap.keySet().contains(film.getId())) {
+        if (filmMap.containsKey(film.getId())) {
             throw new NoSuchElementException("film");
         }
         film = buildFilm(film);
@@ -108,7 +110,11 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void deleteFilm(int id) {
-        id = 0;
+    }
+
+    @Override
+    public List<Film> searchFilms(String query, List<String> by) {
+        return null;
     }
 
     private Film buildFilm(Film film) {
@@ -124,7 +130,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             return film.toBuilder().userLike(new ArrayList<>()).rate(0).build();
         }
         final Film oldFilm = filmMap.get(film.getId());
-        final List<Integer> userLike = oldFilm.getUserLike().stream().collect(Collectors.toList());
+        final List<Integer> userLike = new ArrayList<>(oldFilm.getUserLike());
         return film.toBuilder().clearUserLike().userLike(userLike).build();
     }
 }

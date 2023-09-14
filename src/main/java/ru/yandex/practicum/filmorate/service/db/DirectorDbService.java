@@ -1,26 +1,22 @@
 package ru.yandex.practicum.filmorate.service.db;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
-import ru.yandex.practicum.filmorate.storage.db.DirectorDbStorage;
 
 import javax.validation.ValidationException;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
 @Service
-public class DirectorDbService implements DirectorService {
-
-    private final DirectorStorage directorStorage;
+@Primary
+@RequiredArgsConstructor
+class DirectorDbService implements DirectorService {
+    private final DirectorStorage storage;
     private static final String ERROR_MESSAGE = "Director id='%s' was not found";
-
-    @Autowired
-    DirectorDbService(DirectorDbStorage directorDbStorage) {
-        this.directorStorage = directorDbStorage;
-    }
 
     private Director valid(Director director) {
         if (director == null) {
@@ -39,8 +35,8 @@ public class DirectorDbService implements DirectorService {
 
     @Override
     public boolean deleteDirectorById(int id) {
-        Director dir = valid(directorStorage.getDirectorById(id));
-        if (directorStorage.deleteDirectorById(dir.getId())) {
+        Director dir = valid(storage.getDirectorById(id));
+        if (storage.deleteDirectorById(dir.getId())) {
             return true;
         } else {
             throw new NoSuchElementException(String.format(ERROR_MESSAGE, id));
@@ -49,7 +45,7 @@ public class DirectorDbService implements DirectorService {
 
     @Override
     public Director putDirector(Director director) {
-        Director dir = directorStorage.editDirector(valid(director));
+        Director dir = storage.editDirector(valid(director));
         if (dir != null) {
             return dir;
         } else {
@@ -59,7 +55,7 @@ public class DirectorDbService implements DirectorService {
 
     @Override
     public Director postDirector(Director director) {
-        return directorStorage.addDirector(valid(director));
+        return storage.addDirector(valid(director));
     }
 
     @Override
@@ -67,8 +63,8 @@ public class DirectorDbService implements DirectorService {
         if (id <= 0) {
             throw new NoSuchElementException(String.format(ERROR_MESSAGE, id));
         }
-        if (directorStorage.getDirectorById(id) != null) {
-            return directorStorage.getDirectorById(id);
+        if (storage.getDirectorById(id) != null) {
+            return storage.getDirectorById(id);
         } else {
             throw new NoSuchElementException(String.format(ERROR_MESSAGE, id));
         }
@@ -76,7 +72,7 @@ public class DirectorDbService implements DirectorService {
 
     @Override
     public Collection<Director> getAllDirectors() {
-        return directorStorage.getAllDirectors();
+        return storage.getAllDirectors();
     }
 
 

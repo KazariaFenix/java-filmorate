@@ -18,13 +18,11 @@ public class Event {
 
     public Map<String, Object> toMap() {
         Map<String, Object> user = new HashMap<>();
-
         user.put("user_id", userId);
         user.put("time", timestamp);
         user.put("event_type", eventType);
         user.put("operation", operation);
         user.put("entity_id", entityId);
-
         return user;
     }
 }

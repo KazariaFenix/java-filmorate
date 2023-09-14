@@ -7,7 +7,6 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.storage.EventStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -17,12 +16,11 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class ReviewStorageDb implements ReviewStorage {
+class ReviewStorageDb implements ReviewStorage {
 
     private final JdbcTemplate jdbcTemplate;
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
-    private final EventStorage eventStorage;
 
     @Override
     public Review createReview(Review review) {
@@ -102,9 +100,7 @@ public class ReviewStorageDb implements ReviewStorage {
                     review.getContent(),
                     review.getIsPositive(), review.getReviewId());
 
-            Review newReview = getReviewById(review.getReviewId());
-
-            return newReview;
+            return getReviewById(review.getReviewId());
         } else {
             throw new ValidationException("Проверьте id отзыва");
         }

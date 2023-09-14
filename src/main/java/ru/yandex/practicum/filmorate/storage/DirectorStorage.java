@@ -6,19 +6,19 @@ import java.util.Collection;
 
 public interface DirectorStorage {
 
-    public Director addDirector(Director director);
+    Director addDirector(Director director);
 
-    public Director editDirector(Director director);
+    Director editDirector(Director director);
 
-    public Director getDirectorById(int id);
+    Director getDirectorById(int id);
 
-    public Collection<Director> getAllDirectors();
+    Collection<Director> getAllDirectors();
 
-    public boolean deleteDirectorById(int id);
+    boolean deleteDirectorById(int id);
 
-    public void setFilmsDirectors(Collection<Director> directors, int filmId);
+    void setFilmsDirectors(Collection<Director> directors, int filmId);
 
-    public Collection<Director> getFilmDirectorsSet(int filmId);
+    Collection<Director> getFilmDirectorsSet(int filmId);
 
-    public void deleteFilmDirectors(int filmId);
+    void deleteFilmDirectors(int filmId);
 }

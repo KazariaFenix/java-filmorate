@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -7,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
@@ -14,18 +16,13 @@ import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 import java.sql.PreparedStatement;
 
 import java.util.Collection;
+import java.util.Objects;
 
-@Component
-public class DirectorDbStorage implements DirectorStorage {
-
+@Repository
+@RequiredArgsConstructor
+class DirectorDbStorage implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public DirectorDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    // main methods
     @Override
     public Director addDirector(Director director) {
         String sqlQuery = "INSERT INTO directors(name) VALUES (?)";
@@ -35,7 +32,7 @@ public class DirectorDbStorage implements DirectorStorage {
             stmt.setString(1, director.getName());
             return stmt;
         }, keyHolder);
-        director.setId(keyHolder.getKey().intValue());
+        director.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
         return director;
     }
 

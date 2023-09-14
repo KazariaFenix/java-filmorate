@@ -10,37 +10,34 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-@Value
+@Data
 @Builder(toBuilder = true)
 public class Film {
-    private final int id;
+    private int id;
     @NotBlank
-    private final String name;
+    private String name;
     @Size(max = 200)
-    private final String description;
+    private String description;
     @IsAfter(current = "1895_12_28")
-    private final LocalDate releaseDate;
+    private LocalDate releaseDate;
     @Positive
-    private final Integer duration;
-    private final Integer rate;
-    private final Set<FilmGenre> genres;
-    private final FilmMPA mpa;
+    private Integer duration;
+    private Integer rate;
+    private Set<FilmGenre> genres;
+    private FilmMPA mpa;
     @Singular("oneLike")
-    private final Set<Integer> userLike;
-    private final Collection<Director> directors;
-
+    private Set<Integer> userLike;
+    private Collection<Director> directors;
 
     public Map<String, Object> toMap() {
-        Map<String, Object> user = new HashMap<>();
-
-        user.put("name", name);
-        user.put("description", description);
-        user.put("release_date", releaseDate);
-        user.put("duration", duration);
-        user.put("rate", rate);
-        user.put("mpa_id", mpa.getId());
-
-        return user;
+        Map<String, Object> film = new HashMap<>();
+        film.put("name", name);
+        film.put("description", description);
+        film.put("release_date", releaseDate);
+        film.put("duration", duration);
+        film.put("rate", rate);
+        film.put("mpa_id", mpa.getId());
+        return film;
     }
 
 }
