@@ -47,6 +47,11 @@ public class FilmServiceDb implements FilmService {
     }
 
     @Override
+    public List<Film> searchFilms(String query, List<String> by) {
+        return filmStorage.searchFilms(query,by);
+    }
+
+    @Override
     public void deleteLike(int filmId, int userId) {
         filmStorage.deleteLike(filmId, userId);
         eventStorage.addEvent(filmId, userId, EventType.LIKE, EventStatus.REMOVE);

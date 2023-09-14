@@ -42,6 +42,11 @@ public class InMemoryFilmService implements FilmService {
     }
 
     @Override
+    public List<Film> searchFilms(String query, List<String> by) {
+        return null;
+    }
+
+    @Override
     public void deleteLike(int filmId, int userId) {
         filmStorage.deleteLike(filmId, userId);
     }
