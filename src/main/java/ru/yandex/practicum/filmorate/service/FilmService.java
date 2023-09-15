@@ -23,6 +23,8 @@ public interface FilmService {
     List<Film> searchFilms(String query, List<String> by);
 
     void deleteFilm(int id);
+
     List<Film> getCommonFilms(int userId, int friendId);
+
     Collection<Film> getFilmsDirectors(int directorId, String sortType);
 }
