@@ -105,9 +105,9 @@ class FilmDbStorage implements FilmStorage {
     @Override
     public void putLike(int filmId, int userId) {
         checkExistUserId(userId);
-        String sqlQuery = "insert into USERS_LIKE(film_id, user_id)\n" +
-                "SELECT ?,? \n" +
-                "where not exists (select * from USERS_LIKE where film_id = ? AND user_id=?)";
+        String sqlQuery = "INSERT INTO users_like(film_id, user_id) " +
+                "SELECT ?,?  " +
+                "WHERE NOT EXISTS (SELECT * FROM users_like WHERE film_id = ? AND user_id=?)";
         jdbcTemplate.update(sqlQuery, filmId, userId, filmId, userId);
     }
 
@@ -149,12 +149,13 @@ class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getCommonFilms(int userId, int friendId) {
-        String sqlQuery = "SELECT users_like.film_id FROM users_like JOIN films ON films.film_id = users_like.film_id " +
-                "WHERE users_like.user_id = ? AND " +
+        String sqlQuery = "SELECT users_like.film_id FROM users_like " +
+                "JOIN films ON films.film_id = users_like.film_id WHERE users_like.user_id = ? AND " +
                 "users_like.film_id IN (SELECT film_id FROM users_like WHERE user_id = ?) " +
                 "ORDER BY films.rate DESC";
 
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")), userId, friendId);
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")),
+                userId, friendId);
     }
 
     @Override
@@ -177,51 +178,50 @@ class FilmDbStorage implements FilmStorage {
         Map<Integer, FilmMPA> mpa = getAllMpa();
         Map<Integer, Set<Director>> directors = getAllDirectors();
         if (year == 0 && genreId != 0) {
-            String sqlQuery = "SELECT f.* , COUNT(l.user_id) AS quantity\n" +
-                    "FROM films AS f\n" +
-                    "         LEFT JOIN films_genre AS fl ON f.film_id = fl.film_id\n" +
-                    "         LEFT JOIN genre AS g ON fl.genre_id = g.genre_id\n" +
-                    "         LEFT JOIN users_like AS l ON f.film_id = l.film_id\n" +
-                    "WHERE fl.genre_id = ?\n" +
-                    "group by f.film_id\n" +
-                    "ORDER BY quantity DESC\n" +
-                    "LIMIT ?;";
+            String sqlQuery = "SELECT f.* , COUNT(l.user_id) AS quantity " +
+                    "FROM films AS f " +
+                    "LEFT JOIN films_genre AS fl ON f.film_id = fl.film_id " +
+                    "LEFT JOIN genre AS g ON fl.genre_id = g.genre_id " +
+                    "LEFT JOIN users_like AS l ON f.film_id = l.film_id " +
+                    "WHERE fl.genre_id = ? " +
+                    "GROUP BY f.film_id " +
+                    "ORDER BY quantity DESC " +
+                    "LIMIT ?";
 
             return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs, genres, mpa, directors), genreId, count);
         }
         if (year != 0 && genreId == 0) {
-            String sqlQuery = "SELECT f.*, COUNT(l.user_id) AS quantity\n" +
-                    "FROM films f\n" +
-                    "         LEFT JOIN users_like AS l ON f.film_id = l.film_id\n" +
-                    "\n" +
-                    "WHERE EXTRACT(YEAR FROM CAST(release_date AS date)) = ?\n" +
-                    "group by f.film_id\n" +
-                    "ORDER BY quantity DESC\n" +
-                    "LIMIT ?;";
+            String sqlQuery = "SELECT f.*, COUNT(l.user_id) AS quantity " +
+                    "FROM films f " +
+                    "LEFT JOIN users_like AS l ON f.film_id = l.film_id " +
+                    "WHERE EXTRACT(YEAR FROM CAST(release_date AS date)) = ? " +
+                    "GROUP BY f.film_id " +
+                    "ORDER BY quantity DESC " +
+                    "LIMIT ?";
 
             return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs, genres, mpa, directors),
                     year, count);
         }
         if (year == 0) {
-            String sqlQuery = "SELECT f.*, COUNT(l.user_id) AS quantity\n" +
-                    "FROM FILMS AS f\n" +
-                    "         LEFT JOIN users_like AS l ON f.film_id = l.film_id\n" +
-                    "GROUP BY f.film_id\n" +
-                    "ORDER BY quantity DESC\n" +
-                    "LIMIT ?;";
+            String sqlQuery = "SELECT f.*, COUNT(l.user_id) AS quantity " +
+                    "FROM FILMS AS f " +
+                    "LEFT JOIN users_like AS l ON f.film_id = l.film_id " +
+                    "GROUP BY f.film_id " +
+                    "ORDER BY quantity DESC " +
+                    "LIMIT ?";
 
             return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs, genres, mpa, directors), count);
         }
-        String sqlQuery = "SELECT f.*, COUNT(l.user_id) AS quantity\n" +
-                "FROM films AS f\n" +
-                "         LEFT JOIN films_genre AS fl ON f.film_id = fl.film_id\n" +
-                "         LEFT JOIN genre AS g ON fl.genre_id = g.genre_id\n" +
-                "         LEFT JOIN users_like AS l ON f.film_id = l.film_id\n" +
-                "WHERE EXTRACT(YEAR FROM CAST(f.release_date AS date)) = ?\n" +
-                "  AND fl.genre_id = ?\n" +
-                "group by f.film_id\n" +
-                "ORDER BY quantity DESC\n" +
-                "LIMIT ?;";
+        String sqlQuery = "SELECT f.*, COUNT(l.user_id) AS quantity " +
+                "FROM films AS f " +
+                "LEFT JOIN films_genre AS fl ON f.film_id = fl.film_id " +
+                "LEFT JOIN genre AS g ON fl.genre_id = g.genre_id " +
+                "LEFT JOIN users_like AS l ON f.film_id = l.film_id " +
+                "WHERE EXTRACT(YEAR FROM CAST(f.release_date AS date)) = ? " +
+                "AND fl.genre_id = ? " +
+                "GROUP BY f.film_id " +
+                "ORDER BY quantity DESC " +
+                "LIMIT ?";
 
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs, genres, mpa, directors),
                 year, genreId, count);
@@ -230,7 +230,7 @@ class FilmDbStorage implements FilmStorage {
     @Override
     public void deleteFilm(int id) {
         validationFilm(id);
-        String sqlUserLike = "DELETE FROM FILMS WHERE film_id = ?";
+        String sqlUserLike = "DELETE FROM films WHERE film_id = ?";
         jdbcTemplate.update(sqlUserLike, id);
     }
 
@@ -253,55 +253,57 @@ class FilmDbStorage implements FilmStorage {
             }
         }
         if (director && title) {
-            sql = "SELECT f.FILM_ID,\n" +
-                    "       f.name,\n" +
-                    "       f.description,\n" +
-                    "       f.rate,\n" +
-                    "       f.release_date,\n" +
-                    "       f.duration,\n" +
-                    "       f.MPA_ID,\n" +
-                    "       COUNT(ul.user_id) as quantiy\n" +
-                    "FROM FILMS f\n" +
-                    "         LEFT JOIN users_like ul on f.film_id = ul.film_id\n" +
-                    "         LEFT JOIN films_directors fd ON f.film_id = fd.film_id\n" +
-                    "         LEFT JOIN directors d ON fd.director_id = d.director_id\n" +
-                    "WHERE f.name ILIKE ?\n" +
-                    "   OR d.name ILIKE ?\n" +
-                    "group by f.FILM_ID\n" +
+            sql = "SELECT f.film_id, " +
+                    "       f.name, " +
+                    "       f.description, " +
+                    "       f.rate, " +
+                    "       f.release_date, " +
+                    "       f.duration, " +
+                    "       f.mpa_id, " +
+                    "       COUNT(ul.user_id) AS quantiy " +
+                    "FROM FILMS f " +
+                    "         LEFT JOIN users_like AS ul on f.film_id = ul.film_id " +
+                    "         LEFT JOIN films_directors AS fd ON f.film_id = fd.film_id " +
+                    "         LEFT JOIN directors AS d ON fd.director_id = d.director_id " +
+                    "WHERE f.name ILIKE ? " +
+                    "   OR d.name ILIKE ? " +
+                    "GROUP BY f.film_id " +
                     "ORDER BY quantiy desc;";
-            return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, filmIdGenres, filmIdMpa, filmIdDirector), request, request);
+            return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, filmIdGenres, filmIdMpa, filmIdDirector),
+                    request, request);
         }
         if (title) {
-            sql = "SELECT f.FILM_ID,\n" +
-                    "       f.name,\n" +
-                    "       f.description,\n" +
-                    "       f.rate,\n" +
-                    "       f.release_date,\n" +
-                    "       f.duration,\n" +
-                    "       f.MPA_ID,\n" +
-                    "       COUNT(ul.user_id) as quantiy\n" +
-                    "FROM FILMS f\n" +
-                    "         LEFT JOIN users_like ul on f.film_id = ul.film_id\n" +
-                    "WHERE f.NAME ilike ?\n" +
-                    "group by f.FILM_ID\n" +
+            sql = "SELECT f.film_id, " +
+                    "       f.name, " +
+                    "       f.description, " +
+                    "       f.rate, " +
+                    "       f.release_date, " +
+                    "       f.duration, " +
+                    "       f.mpa_id, " +
+                    "       COUNT(ul.user_id) AS quantiy " +
+                    "FROM FILMS f " +
+                    "         LEFT JOIN users_like AS ul on f.film_id = ul.film_id " +
+                    "WHERE f.NAME ILIKE ? " +
+                    "GROUP BY f.FILM_ID " +
                     "ORDER BY quantiy;";
-            return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, filmIdGenres, filmIdMpa, filmIdDirector), request);
+            return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, filmIdGenres, filmIdMpa, filmIdDirector),
+                    request);
         }
         if (director) {
-            sql = "SELECT f.FILM_ID,\n" +
-                    "       f.name,\n" +
-                    "       f.description,\n" +
-                    "       f.rate,\n" +
-                    "       f.release_date,\n" +
-                    "       f.duration,\n" +
-                    "       f.MPA_ID,\n" +
-                    "       COUNT(ul.user_id) as quantiy\n" +
-                    "FROM FILMS f\n" +
-                    "         LEFT JOIN users_like ul on f.film_id = ul.film_id\n" +
-                    "         LEFT JOIN films_directors fd ON f.film_id = fd.film_id\n" +
-                    "         LEFT JOIN directors d ON fd.director_id = d.director_id\n" +
-                    "WHERE d.name ILIKE ?\n" +
-                    "group by f.FILM_ID\n" +
+            sql = "SELECT f.film_id, " +
+                    "       f.name, " +
+                    "       f.description, " +
+                    "       f.rate, " +
+                    "       f.release_date, " +
+                    "       f.duration, " +
+                    "       f.mpa_id, " +
+                    "       COUNT(ul.user_id) AS quantiy " +
+                    "FROM FILMS f " +
+                    "         LEFT JOIN users_like AS ul on f.film_id = ul.film_id " +
+                    "         LEFT JOIN films_directors AS fd ON f.film_id = fd.film_id " +
+                    "         LEFT JOIN directors AS d ON fd.director_id = d.director_id " +
+                    "WHERE d.name ILIKE ? " +
+                    "GROUP BY f.film_id " +
                     "ORDER BY quantiy desc;";
             return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, filmIdGenres, filmIdMpa, filmIdDirector),
                     request);
@@ -310,24 +312,19 @@ class FilmDbStorage implements FilmStorage {
 
     @Override
     public Collection<Film> filmsByDirectorSorted(int directorId, String sortBy) {
-        directorStorage.getDirectorById(directorId); // for checking up if director exists
+        directorStorage.getDirectorById(directorId);
         SqlRowSet sql;
         switch (sortBy) {
             case "year":
-                sql = jdbcTemplate.queryForRowSet("SELECT f.*" +
-                        "FROM films_directors AS fd " +
-                        "JOIN FILMS AS f ON fd.film_id = f.film_id " +
-                        "WHERE director_id = ? " +
-                        "GROUP BY f.film_id, f.release_date " +
-                        "ORDER BY f.release_date", directorId);
+                sql = jdbcTemplate.queryForRowSet("SELECT f.* FROM films_directors AS fd " +
+                        "JOIN FILMS AS f ON fd.film_id = f.film_id WHERE director_id = ? " +
+                        "GROUP BY f.film_id, f.release_date ORDER BY f.release_date", directorId);
                 break;
 
             case "likes":
-                sql = jdbcTemplate.queryForRowSet("SELECT f.* " +
-                        "FROM films_directors as fd " +
+                sql = jdbcTemplate.queryForRowSet("SELECT f.* FROM films_directors AS fd " +
                         "JOIN films AS f ON fd.film_id = f.film_id " +
-                        "LEFT JOIN users_like AS ul ON f.film_id = ul.film_id " +
-                        "WHERE director_id = ? " +
+                        "LEFT JOIN users_like AS ul ON f.film_id = ul.film_id WHERE director_id = ? " +
                         "GROUP BY f.film_id, ul.film_id IN (SELECT film_id FROM users_like) " +
                         "ORDER BY COUNT(ul.film_id) DESC", directorId);
                 break;
@@ -358,8 +355,8 @@ class FilmDbStorage implements FilmStorage {
     }
 
     private Map<Integer, Set<FilmGenre>> getAllGenre() {
-        SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT fg.FILM_ID, fg.GENRE_ID , NAME  FROM FILMS_GENRE fg " +
-                "INNER JOIN GENRE G on FG.genre_id = G.genre_id");
+        SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT fg.film_id, fg.genre_id , name FROM films_genre AS fg " +
+                "INNER JOIN genre AS g on fg.genre_id = g.genre_id");
 
         Map<Integer, Set<FilmGenre>> filmsGenres = new HashMap<>();
         int filmId;
@@ -380,8 +377,8 @@ class FilmDbStorage implements FilmStorage {
     }
 
     private Map<Integer, FilmMPA> getAllMpa() {
-        SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT film_id, M.mpa_id, M.TITLE FROM FILMS " +
-                "INNER JOIN MPA M on FILMS.mpa_id = M.mpa_id;");
+        SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT film_id, m.mpa_id, m.title FROM films " +
+                "INNER JOIN mpa AS m ON films.mpa_id = m.mpa_id");
         Map<Integer, FilmMPA> filmIdMpa = new HashMap<>();
         while (rs.next()) {
             FilmMPA mpa = FilmMPA.builder()
@@ -394,9 +391,8 @@ class FilmDbStorage implements FilmStorage {
     }
 
     private Map<Integer, Set<Director>> getAllDirectors() {
-        SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT film_id, d.director_id , name FROM  FILMS_DIRECTORS\n" +
-                "LEFT JOIN directors d on d.director_id = FILMS_DIRECTORS.director_id\n" +
-                "order by film_id;");
+        SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT film_id, d.director_id , name FROM  films_directors " +
+                "LEFT JOIN directors AS d ON d.director_id = films_directors.director_id ORDER BY film_id");
         Map<Integer, Set<Director>> filmDirectors = new HashMap<>();
         int filmId;
         while (rs.next()) {
@@ -485,7 +481,7 @@ class FilmDbStorage implements FilmStorage {
     }
 
     private List<User> getOtherUserList(int userId) {
-        String sqlQuery = "SELECT * FROM users where id not in (?)";
+        String sqlQuery = "SELECT * FROM users WHERE id NOT IN (?)";
 
         return jdbcTemplate.query(sqlQuery,
                 (rs, rowNum) -> userDbStorage.findUserById(rs.getLong("id")),

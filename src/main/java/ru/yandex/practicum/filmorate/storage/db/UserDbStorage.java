@@ -119,7 +119,7 @@ class UserDbStorage implements UserStorage {
 
     public void deleteUser(int id) {
         validationIdUser(id);
-        String sqlUserLike = "DELETE FROM USERS WHERE id = ?";
+        String sqlUserLike = "DELETE FROM users WHERE id = ?";
         jdbcTemplate.update(sqlUserLike, id);
     }
 
