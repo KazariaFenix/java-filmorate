@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -12,15 +12,11 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
 
-@Repository
 @Primary
-public class UserDbStorage implements UserStorage {
+@Repository
+@RequiredArgsConstructor
+class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public User addUser(User user) {
@@ -30,9 +26,7 @@ public class UserDbStorage implements UserStorage {
                 .withTableName("users")
                 .usingGeneratedKeyColumns("id");
         long key = simpleJdbcInsert.executeAndReturnKey(user.toMap()).longValue();
-        User newUser = findUserById(key);
-
-        return newUser;
+        return findUserById(key);
     }
 
     @Override
@@ -47,15 +41,12 @@ public class UserDbStorage implements UserStorage {
                 user.getLogin(),
                 user.getBirthday(),
                 user.getId());
-        User newUser = findUserById(user.getId());
-
-        return newUser;
+        return findUserById(user.getId());
     }
 
     @Override
     public List<User> getUserList() {
         String sqlQuery = "SELECT * FROM users";
-
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findUserById(rs.getLong("id")));
     }
 
@@ -64,29 +55,25 @@ public class UserDbStorage implements UserStorage {
         User user;
         String sqlQuery = "SELECT * FROM users WHERE id = ?";
         SqlRowSet userRow = jdbcTemplate.queryForRowSet(sqlQuery, userId);
-
         if (userRow.next()) {
             user = User.builder().id(userRow.getLong("id"))
                     .email(userRow.getString("email"))
                     .name(userRow.getString("name"))
                     .login(userRow.getString("login"))
-                    .birthday(userRow.getDate("birthday").toLocalDate())
+                    .birthday(Objects.requireNonNull(userRow.getDate("birthday")).toLocalDate())
                     .build();
         } else {
             throw new NoSuchElementException("userId");
         }
-
         return user;
     }
 
     @Override
     public List<User> getFriendsList(long userId) {
         validationIdUser(userId);
-
         String sqlQuery = "SELECT friend_id FROM user_friends WHERE user_id = ?";
-        List<User> friends = jdbcTemplate.query(sqlQuery, (rs, rowNum) ->
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) ->
                 findUserById(rs.getInt("friend_id")), userId);
-        return friends;
     }
 
     @Override

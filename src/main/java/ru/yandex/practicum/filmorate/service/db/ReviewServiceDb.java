@@ -19,7 +19,7 @@ public class ReviewServiceDb implements ReviewService {
 
     @Override
     public Review createReview(Review review) {
-        Review rev =  reviewStorage.createReview(review);
+        Review rev = reviewStorage.createReview(review);
         eventStorage.addEvent(rev.getReviewId(), rev.getUserId(), EventType.REVIEW, EventStatus.ADD);
         return rev;
     }
@@ -31,7 +31,7 @@ public class ReviewServiceDb implements ReviewService {
 
     @Override
     public Review updateReview(Review review) {
-        Review rev =  reviewStorage.updateReview(review);
+        Review rev = reviewStorage.updateReview(review);
         eventStorage.addEvent(rev.getReviewId(), rev.getUserId(), EventType.REVIEW, EventStatus.UPDATE);
         return rev;
     }

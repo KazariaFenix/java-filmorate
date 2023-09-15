@@ -1,5 +1,8 @@
 package ru.yandex.practicum.filmorate.exception;
 
+import lombok.Getter;
+
+@Getter
 public class NoSuchElementException extends RuntimeException {
     String param;
 
@@ -7,7 +10,4 @@ public class NoSuchElementException extends RuntimeException {
         this.param = param;
     }
 
-    public String getParam() {
-        return param;
-    }
 }

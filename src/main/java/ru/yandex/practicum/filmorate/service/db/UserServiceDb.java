@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service.db;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Event;
@@ -9,25 +9,20 @@ import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.EventStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
-import ru.yandex.practicum.filmorate.storage.db.EventDbStorage;
+
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.*;
 
 @Service
 @Primary
-public class UserServiceDb implements UserService {
+@RequiredArgsConstructor
+class UserServiceDb implements UserService {
     private final UserStorage userStorage;
-    private final EventDbStorage eventStorage;
+    private final EventStorage eventStorage;
     private final FilmStorage filmStorage;
-
-    @Autowired
-    public UserServiceDb(UserStorage userStorage, EventDbStorage eventStorage, FilmStorage filmStorage) {
-        this.userStorage = userStorage;
-        this.eventStorage = eventStorage;
-        this.filmStorage = filmStorage;
-    }
 
     @Override
     public User addUser(User user) {

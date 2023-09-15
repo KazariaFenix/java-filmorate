@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service.db;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.FilmMPA;
@@ -11,13 +11,9 @@ import java.util.List;
 
 @Service
 @Primary
-public class MPAServiceDb implements MpaService {
+@RequiredArgsConstructor
+class MPAServiceDb implements MpaService {
     private final MPAStorage mpa;
-
-    @Autowired
-    public MPAServiceDb(MPAStorage mpa) {
-        this.mpa = mpa;
-    }
 
     @Override
     public List<FilmMPA> getAllMPA() {

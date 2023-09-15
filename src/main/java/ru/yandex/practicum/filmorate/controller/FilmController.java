@@ -1,22 +1,18 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.db.FilmServiceDb;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/films")
 public class FilmController {
-    private final FilmServiceDb service;
-
-    @Autowired
-    public FilmController(FilmServiceDb service) {
-        this.service = service;
-    }
+    private final FilmService service;
 
     @GetMapping
     public List<Film> getFilmList() {
@@ -48,7 +44,7 @@ public class FilmController {
         service.deleteLike(id, userId);
     }
 
-    @GetMapping("/popular") //popular?count=1
+    @GetMapping("/popular")
     public List<Film> getPopular(@RequestParam(defaultValue = "10") int count,
                                  @RequestParam(defaultValue = "0") int year,
                                  @RequestParam(defaultValue = "0") int genreId) {

@@ -20,7 +20,7 @@ public interface FilmStorage {
 
     void putLike(int filmId, int userId);
 
-    public Collection<Film> filmsByDirectorSorted(int directorId, String sortBy);
+    Collection<Film> filmsByDirectorSorted(int directorId, String sortBy);
 
     List<Film> getCommonFilms(int userId, int friendId);
 

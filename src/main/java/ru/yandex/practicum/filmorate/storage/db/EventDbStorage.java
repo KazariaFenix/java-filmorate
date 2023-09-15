@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -16,20 +16,16 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
 
-@Repository
+
 @Primary
-public class EventDbStorage implements EventStorage {
+@Repository
+@RequiredArgsConstructor
+class EventDbStorage implements EventStorage {
     private final JdbcTemplate jdbcTemplate;
     private final UserStorage userStorage;
 
-    @Autowired
-    public EventDbStorage(JdbcTemplate jdbcTemplate, UserStorage userStorage) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.userStorage = userStorage;
-    }
-
     @Override
-    public int addEvent(int entityId, int userId, EventType eventType, EventStatus operation) {
+    public void addEvent(int entityId, int userId, EventType eventType, EventStatus operation) {
         Event event = Event.builder()
                 .eventType(eventType.name())
                 .operation(operation.name())
@@ -40,7 +36,7 @@ public class EventDbStorage implements EventStorage {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("events")
                 .usingGeneratedKeyColumns("event_id");
-        return simpleJdbcInsert.executeAndReturnKey(event.toMap()).intValue();
+        simpleJdbcInsert.executeAndReturnKey(event.toMap()).intValue();
     }
 
     @Override
