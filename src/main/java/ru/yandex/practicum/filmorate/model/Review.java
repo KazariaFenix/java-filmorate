@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class Review {
     private int reviewId;
     @NotNull
