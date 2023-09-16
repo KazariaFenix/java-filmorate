@@ -13,8 +13,8 @@ import java.util.NoSuchElementException;
 @Service
 @RequiredArgsConstructor
 class DirectorDbService implements DirectorService {
-    private final DirectorStorage directorStorage;
     private static final String ERROR_MESSAGE = "Director id='%s' was not found";
+    private final DirectorStorage directorStorage;
 
     private Director valid(Director director) {
         if (director == null) {
@@ -44,11 +44,7 @@ class DirectorDbService implements DirectorService {
     @Override
     public Director putDirector(Director director) {
         Director dir = directorStorage.editDirector(valid(director));
-        if (dir != null) {
-            return dir;
-        } else {
-            throw new NoSuchElementException(String.format(ERROR_MESSAGE, director.getId()));
-        }
+        return dir;
     }
 
     @Override
@@ -61,11 +57,7 @@ class DirectorDbService implements DirectorService {
         if (id <= 0) {
             throw new NoSuchElementException(String.format(ERROR_MESSAGE, id));
         }
-        if (directorStorage.getDirectorById(id) != null) {
-            return directorStorage.getDirectorById(id);
-        } else {
-            throw new NoSuchElementException(String.format(ERROR_MESSAGE, id));
-        }
+        return directorStorage.getDirectorById(id);
     }
 
     @Override

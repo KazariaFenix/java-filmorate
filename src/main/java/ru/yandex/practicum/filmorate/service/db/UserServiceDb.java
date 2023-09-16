@@ -76,6 +76,7 @@ class UserServiceDb implements UserService {
         return eventStorage.getAllEventByUserId(userId);
     }
 
+    @Override
     public List<Film> getRecommendedFilms(int userId) {
         return filmStorage.getRecommendedFilms(userId);
     }

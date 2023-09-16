@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.ErrorUpdatingListDirectors;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
@@ -86,7 +87,7 @@ class DirectorDbStorage implements DirectorStorage {
                         new DirectorMapper(), director.getId());
                 jdbcTemplate.update(query, filmId, Objects.requireNonNull(director).getId());
             } catch (DataIntegrityViolationException | NullPointerException ex) {
-                throw new RuntimeException(String.format("Couldn't update directors list for film id=%s", filmId));
+                throw new ErrorUpdatingListDirectors(String.format("Couldn't update directors list for film id=%s", filmId));
             }
         }
     }
