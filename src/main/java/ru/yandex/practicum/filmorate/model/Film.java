@@ -5,11 +5,12 @@ import ru.yandex.practicum.filmorate.validator.IsAfter;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-@Value
+@Data
 @Builder(toBuilder = true)
 public class Film {
     private final int id;
@@ -26,17 +27,18 @@ public class Film {
     private final FilmMPA mpa;
     @Singular("oneLike")
     private final Set<Integer> userLike;
+    private final Collection<Director> directors;
+
 
     public Map<String, Object> toMap() {
-        Map<String, Object> user = new HashMap<>();
-
-        user.put("name", name);
-        user.put("description", description);
-        user.put("release_date", releaseDate);
-        user.put("duration", duration);
-        user.put("rate", rate);
-        user.put("mpa_id", mpa.getId());
-
-        return user;
+        Map<String, Object> film = new HashMap<>();
+        film.put("name", name);
+        film.put("description", description);
+        film.put("release_date", releaseDate);
+        film.put("duration", duration);
+        film.put("rate", rate);
+        film.put("mpa_id", mpa.getId());
+        return film;
     }
+
 }

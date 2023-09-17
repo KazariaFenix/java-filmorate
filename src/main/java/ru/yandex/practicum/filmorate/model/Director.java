@@ -1,13 +1,15 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotBlank;
 
 @Data
+@AllArgsConstructor
 @Builder(toBuilder = true)
-public class FilmGenre {
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class Director {
     private int id;
     @NotBlank
     private String name;

@@ -29,7 +29,6 @@ public class User {
 
     public Map<String, Object> toMap() {
         Map<String, Object> user = new HashMap<>();
-
         user.put("email", email);
         if (name == null || name.isBlank()) {
             user.put("name", login);
@@ -38,7 +37,6 @@ public class User {
         }
         user.put("login", login);
         user.put("birthday", birthday);
-
         return user;
     }
 }
