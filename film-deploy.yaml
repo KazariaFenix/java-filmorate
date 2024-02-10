@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deploy
+  labels:
+    env: prod
+    app: main
+    tier: backend
+    owner: MarzuevVladimir
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      project: first-project
+  template:
+    metadata:
+      labels:
+        project: first-project
+    spec:
+      containers:
+        - name: film-java
+          image: film-java.latest
+          ports:
+            - containerPort: 8081
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: my-auto-scaler
+spec:
+  maxReplicas: 5
+  minReplicas: 3
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: my-deploy
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 90
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+
+---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: service-test # имя нашего сервиса
+#spec:
+#  type: LoadBalancer
+#  selector:
+#    project: kgb # селектор наших подов
+#  ports:
+#    - name: kgb-listeners
+#      protocol: TCP
+#      port: 80 # порт сервиса
+#      targetPort: 80 # порт пода
+
