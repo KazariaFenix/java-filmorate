@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.aspect.Loggable;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -22,6 +24,7 @@ public class ReviewStorageDb implements ReviewStorage {
     private final UserStorage userStorage;
 
     @Override
+    @Loggable
     public Review createReview(Review review) {
         if (review.getUserId() < 0 || review.getFilmId() < 0) {
             throw new NoSuchElementException("Проверьте id фильма или id пользователя");
@@ -41,6 +44,7 @@ public class ReviewStorageDb implements ReviewStorage {
     }
 
     @Override
+    @Loggable
     public Review getReviewById(int reviewId) {
         if (validationReview(reviewId)) {
             return jdbcTemplate.queryForObject("SELECT *\n " +
@@ -60,6 +64,7 @@ public class ReviewStorageDb implements ReviewStorage {
     }
 
     @Override
+    @Loggable
     public List<Review> getReview(Integer count) {
         return jdbcTemplate.query("SELECT *\n " +
                 "FROM reviews\n" +
@@ -75,6 +80,7 @@ public class ReviewStorageDb implements ReviewStorage {
     }
 
     @Override
+    @Loggable
     public List<Review> getReviewByFilmId(int filmId, int count) {
         filmStorage.findFilmById(filmId);
         return jdbcTemplate.query("SELECT *\n " +
@@ -92,6 +98,7 @@ public class ReviewStorageDb implements ReviewStorage {
     }
 
     @Override
+    @Loggable
     public Review updateReview(Review review) {
         if (validationReview(review.getReviewId())) {
             jdbcTemplate.update("UPDATE reviews SET content = ?, is_positive = ? WHERE review_id = ?",
@@ -104,6 +111,7 @@ public class ReviewStorageDb implements ReviewStorage {
     }
 
     @Override
+    @Loggable
     public void deleteReviewById(int reviewId) {
         if (validationReview(reviewId)) {
            // Review review = getReviewById(reviewId);
@@ -115,6 +123,7 @@ public class ReviewStorageDb implements ReviewStorage {
     }
 
     @Override
+    @Loggable
     public void likeReview(int reviewId, int userId) {
         try {
             userStorage.findUserById(userId);
@@ -132,6 +141,7 @@ public class ReviewStorageDb implements ReviewStorage {
     }
 
     @Override
+    @Loggable
     public void dislikeReview(int reviewId, int userId) {
         try {
             userStorage.findUserById(userId);
@@ -149,6 +159,7 @@ public class ReviewStorageDb implements ReviewStorage {
     }
 
     @Override
+    @Loggable
     public void deleteLikeReview(int reviewId, int userId) {
         try {
             userStorage.findUserById(userId);
@@ -170,6 +181,7 @@ public class ReviewStorageDb implements ReviewStorage {
     }
 
     @Override
+    @Loggable
     public void deleteDislikeReview(int reviewId, int userId) {
         try {
             userStorage.findUserById(userId);
@@ -189,6 +201,7 @@ public class ReviewStorageDb implements ReviewStorage {
         }
     }
 
+    @Loggable
     private boolean validationReview(int id) {
         SqlRowSet sqlUser = jdbcTemplate.queryForRowSet("SELECT *\n " +
                 "FROM reviews\n" +

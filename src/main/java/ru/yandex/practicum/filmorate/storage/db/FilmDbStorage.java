@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.aspect.Loggable;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.*;
@@ -27,6 +29,7 @@ class FilmDbStorage implements FilmStorage {
     private final UserStorage userDbStorage;
 
     @Override
+    @Loggable
     public List<Film> getFilmList() {
         String sqlQuery = "SELECT * FROM films";
         Map<Integer, Set<FilmGenre>> genres = getAllGenre();
@@ -36,6 +39,7 @@ class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    @Loggable
     public Film addFilm(Film film) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("films")
@@ -50,6 +54,7 @@ class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    @Loggable
     public Film updateFilm(Film film) {
         validationFilm(film.getId());
         String sqlQuery = "UPDATE films SET name = ?, rate = ?, description = ?,  duration = ?, release_date = ?, " +
@@ -73,6 +78,7 @@ class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    @Loggable
     public Film findFilmById(int filmId) {
         validationFilm(filmId);
         String sqlFilm = "SELECT * FROM films WHERE film_id = ?";
@@ -103,15 +109,17 @@ class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    @Loggable
     public void putLike(int filmId, int userId) {
         checkExistUserId(userId);
-        String sqlQuery = "insert into USERS_LIKE(film_id, user_id)\n" +
+        String sqlQuery = "INSERT INTO USERS_LIKE(film_id, user_id)\n" +
                 "SELECT ?,? \n" +
-                "where not exists (select * from USERS_LIKE where film_id = ? AND user_id=?)";
+                "WHERE NOT exists (SELECT * FROM USERS_LIKE WHERE film_id = ? AND user_id=?)";
         jdbcTemplate.update(sqlQuery, filmId, userId, filmId, userId);
     }
 
     @Override
+    @Loggable
     public List<Film> getRecommendedFilms(int userId) {
         List<Integer> userFilmIds = getUserFilmIds(userId);
         List<User> otherUsers = getOtherUserList(userId);
@@ -148,6 +156,7 @@ class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    @Loggable
     public List<Film> getCommonFilms(int userId, int friendId) {
         String sqlQuery = "SELECT users_like.film_id FROM users_like JOIN films ON films.film_id = users_like.film_id " +
                 "WHERE users_like.user_id = ? AND " +
@@ -158,6 +167,7 @@ class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    @Loggable
     public void deleteLike(int filmId, int userId) {
         if (!validationUserLike(filmId, userId)) {
             throw new NoSuchElementException("Данный пользователь не ставил лайк этому фильму");
@@ -172,6 +182,7 @@ class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    @Loggable
     public List<Film> getPopularFilm(int count, int genreId, int year) {
         Map<Integer, Set<FilmGenre>> genres = getAllGenre();
         Map<Integer, FilmMPA> mpa = getAllMpa();
@@ -228,6 +239,7 @@ class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    @Loggable
     public void deleteFilm(int id) {
         validationFilm(id);
         String sqlUserLike = "DELETE FROM FILMS WHERE film_id = ?";
@@ -235,6 +247,7 @@ class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    @Loggable
     public List<Film> searchFilms(String query, List<String> titleOrDirector) {
         String sql;
         String request = "%" + query + "%";
@@ -267,7 +280,7 @@ class FilmDbStorage implements FilmStorage {
                     "         LEFT JOIN directors d ON fd.director_id = d.director_id\n" +
                     "WHERE f.name ILIKE ?\n" +
                     "   OR d.name ILIKE ?\n" +
-                    "group by f.FILM_ID\n" +
+                    "GROUP BY f.FILM_ID\n" +
                     "ORDER BY quantiy desc;";
             return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, filmIdGenres, filmIdMpa, filmIdDirector), request, request);
         }
@@ -283,7 +296,7 @@ class FilmDbStorage implements FilmStorage {
                     "FROM FILMS f\n" +
                     "         LEFT JOIN users_like ul on f.film_id = ul.film_id\n" +
                     "WHERE f.NAME ilike ?\n" +
-                    "group by f.FILM_ID\n" +
+                    "GROUP BY f.FILM_ID\n" +
                     "ORDER BY quantiy;";
             return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, filmIdGenres, filmIdMpa, filmIdDirector), request);
         }
@@ -301,7 +314,7 @@ class FilmDbStorage implements FilmStorage {
                     "         LEFT JOIN films_directors fd ON f.film_id = fd.film_id\n" +
                     "         LEFT JOIN directors d ON fd.director_id = d.director_id\n" +
                     "WHERE d.name ILIKE ?\n" +
-                    "group by f.FILM_ID\n" +
+                    "GROUP BY f.FILM_ID\n" +
                     "ORDER BY quantiy desc;";
             return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs, filmIdGenres, filmIdMpa, filmIdDirector),
                     request);
@@ -309,6 +322,7 @@ class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    @Loggable
     public Collection<Film> filmsByDirectorSorted(int directorId, String sortBy) {
         directorStorage.getDirectorById(directorId); // for checking up if director exists
         SqlRowSet sql;
@@ -341,6 +355,7 @@ class FilmDbStorage implements FilmStorage {
         return result;
     }
 
+    @Loggable
     private Film makeFilm(ResultSet rs, Map<Integer, Set<FilmGenre>> filmIdGenres, Map<Integer, FilmMPA> filmIdMpa,
                           Map<Integer, Set<Director>> filmIdDirector) throws SQLException {
         int filmId = rs.getInt("film_id");
@@ -357,9 +372,10 @@ class FilmDbStorage implements FilmStorage {
                 .build();
     }
 
+    @Loggable
     private Map<Integer, Set<FilmGenre>> getAllGenre() {
         SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT fg.FILM_ID, fg.GENRE_ID , NAME  FROM FILMS_GENRE fg " +
-                "INNER JOIN GENRE G on FG.genre_id = G.genre_id");
+                "JOIN GENRE G on FG.genre_id = G.genre_id");
 
         Map<Integer, Set<FilmGenre>> filmsGenres = new HashMap<>();
         int filmId;
@@ -379,9 +395,10 @@ class FilmDbStorage implements FilmStorage {
         return filmsGenres;
     }
 
+    @Loggable
     private Map<Integer, FilmMPA> getAllMpa() {
         SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT film_id, M.mpa_id, M.TITLE FROM FILMS " +
-                "INNER JOIN MPA M on FILMS.mpa_id = M.mpa_id;");
+                "JOIN MPA M on FILMS.mpa_id = M.mpa_id;");
         Map<Integer, FilmMPA> filmIdMpa = new HashMap<>();
         while (rs.next()) {
             FilmMPA mpa = FilmMPA.builder()
@@ -393,6 +410,7 @@ class FilmDbStorage implements FilmStorage {
         return filmIdMpa;
     }
 
+    @Loggable
     private Map<Integer, Set<Director>> getAllDirectors() {
         SqlRowSet rs = jdbcTemplate.queryForRowSet("SELECT film_id, d.director_id , name FROM  FILMS_DIRECTORS\n" +
                 "LEFT JOIN directors d on d.director_id = FILMS_DIRECTORS.director_id\n" +
@@ -415,39 +433,46 @@ class FilmDbStorage implements FilmStorage {
         return filmDirectors;
     }
 
+    @Loggable
     private FilmGenre makeGenre(ResultSet rs) throws SQLException {
         return genre.getGenreById(rs.getInt("genre_id"));
     }
 
+    @Loggable
     private Integer makeUsersLike(ResultSet rs) throws SQLException {
         return rs.getInt("user_id");
     }
 
+    @Loggable
     private void updateGenre(Film film) {
         deleteGenre(film);
         addFilmGenres(film, film.getId());
     }
 
+    @Loggable
     private void deleteGenre(Film film) {
         String sqlDelete = "DELETE FROM films_genre WHERE film_id = ?";
         jdbcTemplate.update(sqlDelete, film.getId());
     }
 
+    @Loggable
     private void addFilmGenres(Film film, long key) {
         Set<FilmGenre> filmGenres = new HashSet<>(film.getGenres());
 
         for (FilmGenre genre : filmGenres) {
-            String sqlFilmGenres = "MERGE INTO films_genre (film_id, genre_id) VALUES (?, ?)";
+            String sqlFilmGenres = "INSERT INTO films_genre (film_id, genre_id) VALUES (?, ?)";
             jdbcTemplate.update(sqlFilmGenres, key, genre.getId());
         }
     }
 
+    @Loggable
     private Film addFilmDirectors(Film film, int filmId) {
         directorStorage.setFilmsDirectors(film.getDirectors(), filmId);
         Collection<Director> directors = directorStorage.getFilmDirectorsSet(filmId);
         return film.toBuilder().directors(directors).build();
     }
 
+    @Loggable
     private boolean validationUserLike(int filmId, int userId) {
         String sqlQuery = "SELECT * FROM users_like WHERE film_id =? AND user_id = ?";
         SqlRowSet userLike = jdbcTemplate.queryForRowSet(sqlQuery, filmId, userId);
@@ -455,6 +480,7 @@ class FilmDbStorage implements FilmStorage {
         return userLike.next();
     }
 
+    @Loggable
     private void validationFilm(long filmId) {
         String sqlQuery = "SELECT * FROM films WHERE film_id = ?";
         SqlRowSet film = jdbcTemplate.queryForRowSet(sqlQuery, filmId);
@@ -464,6 +490,7 @@ class FilmDbStorage implements FilmStorage {
         }
     }
 
+    @Loggable
     private void checkExistUserId(long userId) {
         SqlRowSet sqlUser = jdbcTemplate.queryForRowSet("SELECT id FROM users WHERE id = ?", userId);
         if (!sqlUser.next()) {
@@ -472,18 +499,21 @@ class FilmDbStorage implements FilmStorage {
         }
     }
 
+    @Loggable
     private List<Integer> getUserFilmIds(int userId) {
         String sqlQuery = "SELECT film_id FROM users_like WHERE user_id = ?";
 
         return jdbcTemplate.query(sqlQuery, (rs, rowNUm) -> rs.getInt("film_id"), userId);
     }
 
+    @Loggable
     private List<Film> getUserFilms(int userId) {
         String sqlQuery = "SELECT film_id FROM users_like WHERE user_id = ?";
 
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> findFilmById(rs.getInt("film_id")), userId);
     }
 
+    @Loggable
     private List<User> getOtherUserList(int userId) {
         String sqlQuery = "SELECT * FROM users where id not in (?)";
 

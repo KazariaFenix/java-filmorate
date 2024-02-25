@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.aspect.Loggable;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.EventStatus;
 import ru.yandex.practicum.filmorate.model.EventType;
@@ -25,6 +27,7 @@ class EventDbStorage implements EventStorage {
     private final UserStorage userStorage;
 
     @Override
+    @Loggable
     public void addEvent(int entityId, int userId, EventType eventType, EventStatus operation) {
         Event event = Event.builder()
                 .eventType(eventType.name())
@@ -40,6 +43,7 @@ class EventDbStorage implements EventStorage {
     }
 
     @Override
+    @Loggable
     public List<Event> getAllEventByUserId(int userId) {
         String sql = "SELECT * FROM events WHERE user_id = ?";
 
@@ -47,6 +51,7 @@ class EventDbStorage implements EventStorage {
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeEvent(rs), userId);
     }
 
+    @Loggable
     private Event makeEvent(ResultSet rs) throws SQLException {
         return Event.builder()
                 .eventId(rs.getInt("event_id"))

@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.aspect.Loggable;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
@@ -21,6 +23,7 @@ public class GenreDbStorage implements GenreStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
+    @Loggable
     public List<FilmGenre> getAllGenre() {
         String sqlQuery = "SELECT * FROM genre";
 
@@ -35,6 +38,7 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
+    @Loggable
     public FilmGenre getGenreById(long genreId) {
         String sqlQuery = "SELECT * FROM genre WHERE genre_id = ?";
         SqlRowSet genreRow = jdbcTemplate.queryForRowSet(sqlQuery, genreId);

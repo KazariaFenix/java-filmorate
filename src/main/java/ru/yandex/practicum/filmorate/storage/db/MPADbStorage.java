@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.aspect.Loggable;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.FilmMPA;
 import ru.yandex.practicum.filmorate.storage.MPAStorage;
@@ -20,6 +22,7 @@ public class MPADbStorage implements MPAStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
+    @Loggable
     public List<FilmMPA> getAllMPA() {
         String sqlQuery = "SELECT * FROM mpa";
 
@@ -34,6 +37,7 @@ public class MPADbStorage implements MPAStorage {
     }
 
     @Override
+    @Loggable
     public FilmMPA getMPAById(long mpaId) {
         String sqlQuery = "SELECT * FROM mpa WHERE mpa_id = ?";
         SqlRowSet mpaRow = jdbcTemplate.queryForRowSet(sqlQuery, mpaId);

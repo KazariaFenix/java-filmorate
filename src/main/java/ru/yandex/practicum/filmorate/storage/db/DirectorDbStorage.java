@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.db;
 
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -7,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.aspect.Loggable;
 import ru.yandex.practicum.filmorate.exception.NoSuchElementException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
@@ -36,6 +38,7 @@ class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
+    @Loggable
     public Director editDirector(Director director) {
         String query = "UPDATE directors SET name = ? WHERE director_id = ?";
         int countLines = jdbcTemplate.update(query,
@@ -49,6 +52,7 @@ class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
+    @Loggable
     public Director getDirectorById(int id) {
         Director director;
         try {
@@ -61,20 +65,23 @@ class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
+    @Loggable
     public Collection<Director> getAllDirectors() {
         return jdbcTemplate.query("SELECT * FROM directors", new DirectorMapper());
     }
 
     @Override
+    @Loggable
     public boolean deleteDirectorById(int id) {
-        String sqlQuery = "delete from directors " +
-                "where director_id = ?";
+        String sqlQuery = "DELETE FROM directors " +
+                "WHERE director_id = ?";
         int status = jdbcTemplate.update(sqlQuery, id);
         return status != 0;
     }
 
     // service methods for directors - films link table
     @Override
+    @Loggable
     public void setFilmsDirectors(Collection<Director> directors, int filmId) {
         if (directors == null || directors.isEmpty()) {
             return;
@@ -92,6 +99,7 @@ class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
+    @Loggable
     public Collection<Director> getFilmDirectorsSet(int filmId) {
         String query =
                 "SELECT d.* " +
@@ -102,6 +110,7 @@ class DirectorDbStorage implements DirectorStorage {
     }
 
     @Override
+    @Loggable
     public void deleteFilmDirectors(int filmId) {
         String query = "delete from films_directors " +
                 "where film_id = ?";

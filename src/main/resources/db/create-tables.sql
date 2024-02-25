@@ -1,3 +1,6 @@
+--liquibase formatted sql
+
+--changeset vladimir_marzuev:create_all_table
 CREATE TABLE IF NOT EXISTS mpa
 (
     mpa_id integer PRIMARY KEY,
@@ -79,10 +82,8 @@ CREATE TABLE IF NOT EXISTS users_like
 
 CREATE TABLE IF NOT EXISTS user_friends
 (
-    user_id   integer,
-    friend_id integer,
-    CONSTRAINT user_example_to_users FOREIGN KEY (user_id) REFERENCES users ON DELETE CASCADE,
-    CONSTRAINT friend_example_to_users FOREIGN KEY (friend_id) REFERENCES users ON DELETE CASCADE,
+    user_id   integer REFERENCES users (id) ON DELETE CASCADE,
+    friend_id integer REFERENCES users (id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, friend_id)
 );
 
@@ -99,6 +100,4 @@ CREATE TABLE IF NOT EXISTS films_genre
     PRIMARY KEY (film_id, genre_id)
 );
 
-
-
-
+--rollback drop all table;

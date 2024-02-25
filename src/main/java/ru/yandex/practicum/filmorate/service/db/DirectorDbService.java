@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.service.db;
 
+import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.aspect.Loggable;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.DirectorService;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
@@ -16,6 +18,7 @@ class DirectorDbService implements DirectorService {
     private final DirectorStorage directorStorage;
     private static final String ERROR_MESSAGE = "Director id='%s' was not found";
 
+    @Loggable
     private Director valid(Director director) {
         if (director == null) {
             throw new ValidationException("Director is null");
@@ -32,6 +35,7 @@ class DirectorDbService implements DirectorService {
     }
 
     @Override
+    @Loggable
     public boolean deleteDirectorById(int id) {
         Director dir = valid(directorStorage.getDirectorById(id));
         if (directorStorage.deleteDirectorById(dir.getId())) {
@@ -42,6 +46,7 @@ class DirectorDbService implements DirectorService {
     }
 
     @Override
+    @Loggable
     public Director putDirector(Director director) {
         Director dir = directorStorage.editDirector(valid(director));
         if (dir != null) {
@@ -52,11 +57,13 @@ class DirectorDbService implements DirectorService {
     }
 
     @Override
+    @Loggable
     public Director postDirector(Director director) {
         return directorStorage.addDirector(valid(director));
     }
 
     @Override
+    @Loggable
     public Director getDirectorById(int id) {
         if (id <= 0) {
             throw new NoSuchElementException(String.format(ERROR_MESSAGE, id));
@@ -69,6 +76,7 @@ class DirectorDbService implements DirectorService {
     }
 
     @Override
+    @Loggable
     public Collection<Director> getAllDirectors() {
         return directorStorage.getAllDirectors();
     }

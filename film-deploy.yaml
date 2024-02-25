@@ -19,48 +19,71 @@ spec:
     spec:
       containers:
         - name: film-java
-          image: film-java.latest
+          image: vladimirmarzuev/final:latest
           ports:
-            - containerPort: 8081
+            - containerPort: 8089
 
 ---
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: my-auto-scaler
-spec:
-  maxReplicas: 5
-  minReplicas: 3
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: my-deploy
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 90
-    - type: Resource
-      resource:
-        name: memory
-        target:
-          type: Utilization
-          averageUtilization: 80
-
----
-#apiVersion: v1
-#kind: Service
+#apiVersion: autoscaling/v2
+#kind: HorizontalPodAutoscaler
 #metadata:
-#  name: service-test # имя нашего сервиса
+#  name: my-auto-scaler
 #spec:
-#  type: LoadBalancer
+#  maxReplicas: 5
+#  minReplicas: 3
+#  scaleTargetRef:
+#    apiVersion: apps/v1
+#    kind: Deployment
+#    name: my-deploy
+#  metrics:
+#    - type: Resource
+#      resource:
+#        name: cpu
+#        target:
+#          type: Utilization
+#          averageUtilization: 90
+#    - type: Resource
+#      resource:
+#        name: memory
+#        target:
+#          type: Utilization
+#          averageUtilization: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-test # имя нашего сервиса
+spec:
+  type: NodePort
+  selector:
+    project: first-project # селектор наших подов
+  ports:
+    - name: kgb-listeners
+      protocol: TCP
+      port: 8089 # порт сервиса
+      targetPort: 8089 # порт пода
+#spec:
 #  selector:
-#    project: kgb # селектор наших подов
+#    project: first-project
 #  ports:
-#    - name: kgb-listeners
-#      protocol: TCP
-#      port: 80 # порт сервиса
-#      targetPort: 80 # порт пода
+#    # Default port used by the image
+#    - port: 8089
+#      targetPort: 8089
+---
+#apiVersion: networking.k8s.io/v1
+#kind: Ingress
+#metadata:
+#  name: first-ingress
+#spec:
+#  rules:
+#    - http:
+#        paths:
+#          - pathType: Prefix
+#            path: "/genres"
+#            backend:
+#              service:
+#                name: service-test
+#                port:
+#                  number: 8089
 
